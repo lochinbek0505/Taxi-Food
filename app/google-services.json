@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1073312766485",
+    "project_id": "taxifood-f75ec",
+    "storage_bucket": "taxifood-f75ec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073312766485:android:e591e2a2437ef599b4cc1c",
+        "android_client_info": {
+          "package_name": "uz.falconmobile.taxifood"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYX_UM9a2dS5D8pUfgTBKanynA0iu9zPk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
