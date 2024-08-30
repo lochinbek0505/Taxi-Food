@@ -1,4 +1,4 @@
-package uz.falconmobile.taxifood.ui.dashboard
+package uz.falconmobile.taxifood.ui.fragment
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

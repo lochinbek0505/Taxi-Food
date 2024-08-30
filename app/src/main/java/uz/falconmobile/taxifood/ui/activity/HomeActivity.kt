@@ -1,4 +1,4 @@
-package uz.falconmobile.taxifood
+package uz.falconmobile.taxifood.ui.activity
 
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -7,6 +7,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import uz.falconmobile.taxifood.R
 import uz.falconmobile.taxifood.databinding.ActivityHomeBinding
 
 class HomeActivity : AppCompatActivity() {

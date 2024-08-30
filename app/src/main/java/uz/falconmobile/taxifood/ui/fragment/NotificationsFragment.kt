@@ -1,4 +1,4 @@
-package uz.falconmobile.taxifood.ui.notifications
+package uz.falconmobile.taxifood.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import uz.falconmobile.taxifood.databinding.FragmentNotificationsBinding
+import uz.falconmobile.taxifood.ui.notifications.NotificationsViewModel
 
 class NotificationsFragment : Fragment() {
 

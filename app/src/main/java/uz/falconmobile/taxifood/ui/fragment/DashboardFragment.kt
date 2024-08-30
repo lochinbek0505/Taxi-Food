@@ -1,4 +1,4 @@
-package uz.falconmobile.taxifood.ui.dashboard
+package uz.falconmobile.taxifood.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
