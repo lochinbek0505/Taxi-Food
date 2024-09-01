@@ -259,7 +259,6 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="15dp"
                 android:orientation="horizontal"
-
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="2"
                 tools:listitem="@layout/food_category_layout" />
@@ -290,8 +289,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
+                android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="3"
+                app:spanCount="2"
                 tools:listitem="@layout/restouran_layout" />
 
 

@@ -21,6 +21,7 @@
             app:cardCornerRadius="10dp">
 
             <ImageView
+                android:id="@+id/iv_food"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
@@ -36,14 +37,14 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="-33dp"
         android:layout_marginEnd="25dp"
-        android:elevation="4dp"
-        app:cornerRadius="10dp"
-        android:textColor="@color/colorPrimary"
-        android:text="Add"
-        app:strokeWidth="1dp"
-        android:textSize="20sp"
         android:backgroundTint="#FCF2FD"
-        app:strokeColor="@color/colorPrimary" />
+        android:elevation="4dp"
+        android:text="Add"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        app:cornerRadius="10dp"
+        app:strokeColor="@color/colorPrimary"
+        app:strokeWidth="1dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -61,6 +62,7 @@
 
 
             <ImageView
+                android:id="@+id/iv_is_veg"
                 android:layout_width="13dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_veg"
@@ -82,6 +84,7 @@
                     android:src="@drawable/baseline_star_24_yellow" />
 
                 <TextView
+                    android:id="@+id/tv_star"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
@@ -92,6 +95,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tv_count_star"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -102,6 +106,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -120,6 +125,7 @@
             >
 
             <TextView
+                android:id="@+id/tv_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
@@ -161,6 +167,7 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tv_description"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:maxLines="3"

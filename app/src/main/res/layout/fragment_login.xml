@@ -1,89 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginFragment">
+    tools:context=".ui.fragment.LoginFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            >
+            android:layout_height="?attr/actionBarSize">
 
             <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:id="@+id/iv_back"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="15dp"
-                android:src="@drawable/baseline_arrow_back_ios_24"
-                />
+                android:layout_marginStart="25dp"
+                android:src="@drawable/baseline_arrow_back_ios_24" />
 
         </RelativeLayout>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="110dp"
                 android:fontFamily="@font/poppins"
-                android:layout_marginTop="30dp"
-                android:text="Create new account"
-                android:textColor="@color/colorPrimary"
-                android:textSize="25sp"
+                android:text="Log in"
+                android:textColor="@color/black"
+                android:textSize="27sp"
                 android:textStyle="bold" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:hint="Your Name "
-                app:startIconDrawable="@drawable/user">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLines="1" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:hint="Phone Number "
-                app:startIconDrawable="@drawable/phone">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_phone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone"
-                    android:maxLines="1" />
-
-            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -124,38 +82,39 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_login"
                 android:layout_width="200dp"
                 android:layout_height="60dp"
-                android:text="Sign Up"
                 android:layout_marginTop="50dp"
-                app:cornerRadius="10dp"
-                android:textSize="20sp" />
-           <LinearLayout
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:gravity="center"
-               android:layout_marginTop="15dp"
-               android:orientation="horizontal"
-               >
+                android:text="Sign In"
+                android:textSize="20sp"
+                app:cornerRadius="10dp" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Already  have an account ? "
-                android:textSize="19sp"
-                />
-               <TextView
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:text="Log in"
-                   android:textSize="19sp"
-                   android:layout_marginStart="5dp"
-                   android:fontFamily="sans-serif-medium"
-                   android:textColor="#0C5FA1"/>
-           </LinearLayout>
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Don't have an account? "
+                    android:textSize="19sp" />
+
+                <TextView
+                    android:id="@+id/tv_reg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Sign up"
+                    android:textColor="#0C5FA1"
+                    android:textSize="19sp" />
+            </LinearLayout>
 
         </LinearLayout>
-    </ScrollView>
     </LinearLayout>
 
 </FrameLayout>

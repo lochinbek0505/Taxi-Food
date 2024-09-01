@@ -5,42 +5,40 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import uz.falconmobile.taxifood.databinding.FoodCategoryLayoutBinding
-import uz.falconmobile.taxifood.model.category_model
+import uz.falconmobile.taxifood.databinding.FoodLayoutBinding
+import uz.falconmobile.taxifood.model.food_model
 
-class MenusAdapter(
+class FoodAdapter(
     val context: Context,
-    var items: MutableList<category_model>,
+    var items: MutableList<food_model>,
     var listener: ItemSetOnClickListener,
 
     ) :
-    RecyclerView.Adapter<MenusAdapter.Holder>() {
+    RecyclerView.Adapter<FoodAdapter.Holder>() {
 
 
     interface ItemSetOnClickListener {
-        fun onClick(data: category_model)
+        fun onClick(data: food_model)
     }
 
 
-    inner class Holder(var view: FoodCategoryLayoutBinding) : RecyclerView.ViewHolder(view.root) {
+    inner class Holder(var view: FoodLayoutBinding) : RecyclerView.ViewHolder(view.root) {
 
-        fun bind(data: category_model) {
+        fun bind(data: food_model) {
 
             view.apply {
+
+
 //                this.sekk.setOnTouchListener { _, _ ->
 //                    true
 //                }
-                this.tvName.text = data.name
-//                this.ivCategory.setImageResource(data.image)
-
-
-//                this.tvPr.text = "${data.percentage!!.toInt().toString()} %"
-//                this.sekk.progress = data.percentage!!.toInt()
-//                this.tvAuthor.text = "${data.author!!.firstName} ${data.author!!.lastName}"
+                this.tvName.text = data.foodName
+                this.tvPrice.text = data.star
+                this.tvDescription.text = data.description
+                this.tvCountStar.text = data.star_count
+                this.tvStar.text = data.star
                 Glide.with(context).load(data.image)
-                    .into(this.ivCategory)
-//                this.tvName.text = data.name
-
+                    .into(this.ivFood)
             }
 
 
@@ -52,7 +50,7 @@ class MenusAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
 
         val binding =
-            FoodCategoryLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            FoodLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         return Holder(
             binding

@@ -1,10 +1,12 @@
 package uz.falconmobile.taxifood.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.FirebaseFirestore
 import uz.falconmobile.taxifood.R
 import uz.falconmobile.taxifood.adapter.MenusAdapter
 import uz.falconmobile.taxifood.adapter.RestouranAdapter
@@ -15,6 +17,8 @@ import uz.falconmobile.taxifood.model.restouran_model
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
+
+    private lateinit var database: FirebaseFirestore
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -28,32 +32,10 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val list = arrayListOf<category_model>(
-            category_model(1, "Pizza", R.drawable.food1),
-            category_model(1, "Binyani", R.drawable.food1),
-            category_model(1, "Cake", R.drawable.food1),
-            category_model(1, "Rolls", R.drawable.food1),
-            category_model(1, "Chicken", R.drawable.food1),
-            category_model(1, "Momos", R.drawable.food1),
-            category_model(1, "Pizza", R.drawable.food1),
-            category_model(1, "Binyani", R.drawable.food1),
-            category_model(1, "Cake", R.drawable.food1),
-            category_model(1, "Rolls", R.drawable.food1),
-            category_model(1, "Chicken", R.drawable.food1),
-            category_model(1, "Momos", R.drawable.food1)
-
-        )
-
-        val adapter =
-            MenusAdapter(requireActivity(), list, object : MenusAdapter.ItemSetOnClickListener {
-                override fun onClick(data: category_model) {
-
-                }
-            })
-
-        binding.rvCategory.adapter = adapter
+        database = FirebaseFirestore.getInstance()
 
 
+        readAllUsers()
         val list2 = arrayListOf<restouran_model>(
 
             restouran_model(
@@ -125,10 +107,46 @@ class HomeFragment : Fragment() {
 
             })
 
-        binding.rvRestouran.adapter=adapter2
+//        getLocationName(39.961125, 66.484008)
+        binding.rvRestouran.adapter = adapter2
 
         return root
     }
+
+
+    fun readAllUsers() {
+        val userList = mutableListOf<category_model>()
+
+        database.collection("category_food")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val user = document.toObject(category_model::class.java)
+                    userList.add(user)
+                    viewAdapter(userList)
+                }
+                Log.d("Firestore", "All users: $userList")
+            }
+            .addOnFailureListener { exception ->
+                Log.d("Firestore", "Error getting documents: ", exception)
+            }
+    }
+
+    fun viewAdapter(list: MutableList<category_model>) {
+
+
+        val adapter =
+            MenusAdapter(requireActivity(), list, object : MenusAdapter.ItemSetOnClickListener {
+                override fun onClick(data: category_model) {
+
+                }
+            })
+
+        binding.rvCategory.adapter = adapter
+
+
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

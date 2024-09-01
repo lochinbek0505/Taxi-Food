@@ -10,9 +10,9 @@
     tools:context=".ui.activity.StartActivity">
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="60dp"
         android:src="@drawable/binocular" />
 
     <TextView
@@ -21,30 +21,31 @@
         android:layout_marginTop="10dp"
         android:text="Hi , nice to meed you"
         android:textColor="@color/black"
-        android:textSize="21sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="Set your location to start exploring \n\t\t\t\t\trestaurants around you"
-        android:textSize="19sp" />
+        android:textSize="18sp" />
 
     <com.google.android.material.button.MaterialButton
         android:layout_width="match_parent"
         android:layout_height="60dp"
         app:cornerRadius="10dp"
+        android:id="@+id/btn_location"
         android:layout_marginTop="30dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
         android:text="Use current location"
-        android:textSize="20sp"
+        android:textSize="19sp"
         />
 <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Set your location manually"
-    android:textSize="20sp"
+    android:textSize="19sp"
     android:textColor="@color/colorPrimary"
     android:layout_marginTop="10dp"
     />
@@ -52,7 +53,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="19sp"
+        android:textSize="17sp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
         android:layout_marginTop="70dp"
         android:text="We only access your location while you are \n\tusing the app to improve your experience"/>
 </LinearLayout>
