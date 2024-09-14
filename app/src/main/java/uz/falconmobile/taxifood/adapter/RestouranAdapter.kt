@@ -4,14 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import uz.falconmobile.taxifood.databinding.FoodCategoryLayoutBinding
+import com.bumptech.glide.Glide
 import uz.falconmobile.taxifood.databinding.RestouranLayoutBinding
-import uz.falconmobile.taxifood.model.category_model
 import uz.falconmobile.taxifood.model.restouran_model
 
 class RestouranAdapter(
     val context: Context,
-    var items: MutableList<restouran_model>,
+    var items: List<restouran_model>?,
     var listener: ItemSetOnClickListener,
 
     ) :
@@ -32,14 +31,14 @@ class RestouranAdapter(
 //                    true
 //                }
                 this.tvName.text = data.name
-                this.ivRestouran.setImageResource(data.image)
-                this.tvLocate.text=data.locate
-                this.tvLenght.text=data.lenght
+//                this.ivRestouran.setImageResource(data.banner)
+                this.tvLocate.text = data.location
+                this.tvLenght.text = data.lenght
 //                this.tvPr.text = "${data.percentage!!.toInt().toString()} %"
 //                this.sekk.progress = data.percentage!!.toInt()
 //                this.tvAuthor.text = "${data.author!!.firstName} ${data.author!!.lastName}"
-//                Glide.with(context).load("https://bestedu.uz${data.author!!.image}")
-//                    .into(this.tvImage)
+                Glide.with(context).load(data.banner)
+                    .into(this.ivRestouran)
 //                this.tvName.text = data.name
 
             }
@@ -63,7 +62,7 @@ class RestouranAdapter(
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        val item = items[position]
+        val item = items!![position]
 
         holder.bind(item)
 
@@ -79,6 +78,6 @@ class RestouranAdapter(
     }
 
 
-    override fun getItemCount(): Int = items.count()
+    override fun getItemCount(): Int = items?.count()!!
 
 }

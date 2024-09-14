@@ -1,6 +1,8 @@
 package uz.falconmobile.taxifood.ui.activity
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,11 +12,15 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.firestore.FirebaseFirestore
+import uz.falconmobile.taxifood.R
 import uz.falconmobile.taxifood.databinding.ActivityStartBinding
 import java.io.IOException
 import java.util.Locale
@@ -22,6 +28,7 @@ import java.util.Locale
 class StartActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var db: FirebaseFirestore
 
     companion object {
         private const val PERMISSION_REQUEST_CODE = 101
@@ -36,8 +43,28 @@ class StartActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
+        binding.tvManually.setOnClickListener {
+
+            showAddressInputDialog()
+
+        }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        db = FirebaseFirestore.getInstance()
+
+
+//
+//        list.forEach {
+//
+//            wrtie_menu(it.foodName,it.image,it.description,it.price,it.star,it.star_count,it.isVeg)
+//
+//        }
+        val check = getStringData("is_reg", "")
+
+        if (check == "reg") {
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+        }
         binding.btnLocation.setOnClickListener {
             if (isLocationEnabled()) {
                 getLastLocation()
@@ -46,12 +73,7 @@ class StartActivity : AppCompatActivity() {
                     this, "Iltimos GPS ni qo'shing", Toast.LENGTH_SHORT
                 ).show()
                 enableLocation()
-                val check = getStringData("is_reg", "")
 
-                if (check == "reg") {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    finish()
-                }
             }
 
         }
@@ -74,19 +96,6 @@ class StartActivity : AppCompatActivity() {
     }
 
 
-    private fun saveData(key: String, value: String) {
-        val sharedPreferences =
-            getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString(key, value)
-        editor.apply() // Apply asynchronously
-    }
-
-    private fun getStringData(key: String, defaultValue: String): String? {
-        val sharedPreferences =
-            getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        return sharedPreferences.getString(key, defaultValue)
-    }
 
     private fun getLastLocation() {
         if (ActivityCompat.checkSelfPermission(
@@ -114,6 +123,101 @@ class StartActivity : AppCompatActivity() {
         }
     }
 
+    fun wrtie_menu(
+        name: String,
+        img: String,
+        description: String,
+        price: String,
+        star: String,
+        star_count: String,
+        veg: Boolean
+    ) {
+
+//        val isFavorite:Boolean ,
+//        val foodName: String,
+//        val description:String,
+//        val image:String,
+//        val price :String,
+//        val star : String,
+//        val star_count:String,
+//        val isVeg:Boolean
+
+        val user = hashMapOf(
+            "isFavorite" to false,
+            "foodName" to name,
+            "description" to description,
+            "image" to img,
+            "price" to price,
+            "star" to star,
+            "star_count" to star_count,
+            "is_veg" to veg
+
+        )
+
+        db.collection("main_food").document(name)
+            .set(user)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Data dave successfully", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    this,
+                    "Error saving user data: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+    }
+
+
+    private fun saveData(key: String, value: String) {
+        val sharedPreferences =
+            getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString(key, value)
+        editor.apply() // Apply asynchronously
+    }
+
+    private fun getStringData(key: String, defaultValue: String): String? {
+        val sharedPreferences =
+            getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getString(key, defaultValue)
+    }
+    @SuppressLint("MissingInflatedId")
+    private fun showAddressInputDialog() {
+        // Inflate custom layout containing TextInputLayout and TextInputEditText
+        val inflater = LayoutInflater.from(this)
+        val dialogView = inflater.inflate(R.layout.dialog_address_input, null)
+
+        // Get reference to the TextInputEditText
+        val addressInput: TextInputEditText = dialogView.findViewById(R.id.addressInput)
+
+        // Create the MaterialAlertDialog
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Input Address")
+            .setView(dialogView)  // Set the custom layout with TextInputLayout
+            .setPositiveButton("OK") { dialog, _ ->
+                val address = addressInput.text.toString()
+                // Handle the input here
+                if (address.isEmpty()) {
+
+                    Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    saveData("adress", addressInput.text.toString())
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.cancel()  // Close the dialog
+            }
+
+        // Show the dialog
+        builder.show()
+    }
 
     private fun getLocationName(latitude: Double, longitude: Double) {
         val geocoder = Geocoder(this, Locale.getDefault())
@@ -160,6 +264,7 @@ class StartActivity : AppCompatActivity() {
     private fun enableLocation() {
         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
         startActivity(intent)
+        finish()
     }
 
     private fun isLocationEnabled(): Boolean {

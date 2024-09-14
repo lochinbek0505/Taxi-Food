@@ -126,7 +126,7 @@ class RegisterFragment : Fragment() {
                                     )
                                     dao.insertUser(data)
 
-                                    saveData("is_reg","reg")
+                                    saveData("is_reg", "reg")
 
                                     val users = dao.getAllUsers()
                                     Log.d(
@@ -171,28 +171,5 @@ class RegisterFragment : Fragment() {
             }
     }
 
-    fun wrtie_menu(name: String, img: String) {
-
-
-        val user = hashMapOf(
-            "name" to name,
-            "image" to img,
-        )
-
-        db.collection("category_food").document(name)
-            .set(user)
-            .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Data dave successfully", Toast.LENGTH_SHORT)
-                    .show()
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(
-                    requireContext(),
-                    "Error saving user data: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-    }
 
 }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import uz.falconmobile.taxifood.databinding.FoodLayout2Binding
 import uz.falconmobile.taxifood.databinding.FoodLayoutBinding
 import uz.falconmobile.taxifood.model.food_model
 
@@ -22,7 +23,7 @@ class FoodAdapter(
     }
 
 
-    inner class Holder(var view: FoodLayoutBinding) : RecyclerView.ViewHolder(view.root) {
+    inner class Holder(var view: FoodLayout2Binding) : RecyclerView.ViewHolder(view.root) {
 
         fun bind(data: food_model) {
 
@@ -32,12 +33,12 @@ class FoodAdapter(
 //                this.sekk.setOnTouchListener { _, _ ->
 //                    true
 //                }
-                this.tvName.text = data.foodName
-                this.tvPrice.text = data.star
+                this.tvName.text = data.name
+                this.tvPrice.text = data.price
                 this.tvDescription.text = data.description
-                this.tvCountStar.text = data.star_count
-                this.tvStar.text = data.star
-                Glide.with(context).load(data.image)
+                this.tvCountStar.text = "${data.rate_count}"
+                this.tvStar.text = data.rate
+                Glide.with(context).load(data.banner)
                     .into(this.ivFood)
             }
 
@@ -50,7 +51,7 @@ class FoodAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
 
         val binding =
-            FoodLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            FoodLayout2Binding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         return Holder(
             binding

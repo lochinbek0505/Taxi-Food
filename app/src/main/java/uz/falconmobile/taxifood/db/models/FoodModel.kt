@@ -1,13 +1,13 @@
-package uz.falconmobile.taxifood.model
+package uz.falconmobile.taxifood.db.models
 
-import java.io.Serializable
+data class FoodModel(
 
-data class food_model(
     val name: String = "",
     val description: String = "",
     val banner: String = "",
     val price: String = "",
     val rate: String = "",
-    val rate_count: Long = 0,
+    val rate_count: String = "",
     val is_veg: Boolean = false
-) : Serializable
+
+)

@@ -47,6 +47,7 @@
                             android:textStyle="bold" />
 
                         <LinearLayout
+                            android:id="@+id/tv_locatee"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
@@ -60,9 +61,13 @@
                                 android:src="@drawable/baseline_location_on_24" />
 
                             <TextView
+                                android:id="@+id/tv_loc"
+
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="7dp"
+                                android:maxLength="15"
+                                android:maxLines="1"
                                 android:text="St. Samarkand"
                                 android:textColor="@color/black"
                                 android:textSize="16sp" />
@@ -400,6 +405,7 @@
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_food"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

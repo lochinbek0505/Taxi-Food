@@ -7,10 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import uz.falconmobile.taxifood.databinding.FoodCategoryLayoutBinding
 import uz.falconmobile.taxifood.model.category_model
+import uz.falconmobile.taxifood.model.category_model2
 
 class MenusAdapter(
     val context: Context,
-    var items: MutableList<category_model>,
+    var items: MutableList<category_model2>,
     var listener: ItemSetOnClickListener,
 
     ) :
@@ -18,13 +19,13 @@ class MenusAdapter(
 
 
     interface ItemSetOnClickListener {
-        fun onClick(data: category_model)
+        fun onClick(data: category_model2)
     }
 
 
     inner class Holder(var view: FoodCategoryLayoutBinding) : RecyclerView.ViewHolder(view.root) {
 
-        fun bind(data: category_model) {
+        fun bind(data: category_model2) {
 
             view.apply {
 //                this.sekk.setOnTouchListener { _, _ ->
