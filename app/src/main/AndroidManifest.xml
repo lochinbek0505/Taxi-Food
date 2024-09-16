@@ -17,11 +17,17 @@
         android:theme="@style/Theme.TaxiFood"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activity.WishlistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.OpenCategoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.CardActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activity.RestouranActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".ui.activity.StartActivity"
             android:exported="true">
@@ -33,9 +39,7 @@
         </activity>
         <activity
             android:name=".ui.activity.HomeActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".ui.activity.MainActivity"
             android:exported="true" />

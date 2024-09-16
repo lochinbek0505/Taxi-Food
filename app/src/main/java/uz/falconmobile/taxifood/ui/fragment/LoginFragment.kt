@@ -49,8 +49,8 @@ class LoginFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        database=AppDatabase.getDatabase(requireActivity())
-        dao=database.appDao()
+        database = AppDatabase.getDatabase(requireActivity())
+        dao = database.appDao()
 
         binding.ivBack.setOnClickListener {
 
@@ -120,7 +120,7 @@ class LoginFragment : Fragment() {
             }
     }
 
-    fun readDataWithoutDataClass(userid:String) {
+    fun readDataWithoutDataClass(userid: String) {
         val docRef = db.collection("users").document(userid) // Replace with actual document ID
 
 //        val user = hashMapOf(
@@ -147,7 +147,14 @@ class LoginFragment : Fragment() {
 
                     CoroutineScope(Dispatchers.IO).launch {
 
-                        dao.insertUser(UserData(name = firstName!!, email = email!!, number = phone!!, locate = location!!))
+                        dao.insertUser(
+                            UserData(
+                                name = firstName!!,
+                                email = email!!,
+                                number = phone!!,
+                                locate = location!!
+                            )
+                        )
 
 
                     }

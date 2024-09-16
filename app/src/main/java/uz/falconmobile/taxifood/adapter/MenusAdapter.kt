@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import uz.falconmobile.taxifood.databinding.FoodCategoryLayoutBinding
-import uz.falconmobile.taxifood.model.category_model
 import uz.falconmobile.taxifood.model.category_model2
 
 class MenusAdapter(
@@ -19,7 +18,7 @@ class MenusAdapter(
 
 
     interface ItemSetOnClickListener {
-        fun onClick(data: category_model2)
+        fun onClick(data: category_model2,position: Int)
     }
 
 
@@ -31,14 +30,14 @@ class MenusAdapter(
 //                this.sekk.setOnTouchListener { _, _ ->
 //                    true
 //                }
-                this.tvName.text = data.name
+                this.tvName.text = data.type
 //                this.ivCategory.setImageResource(data.image)
 
 
 //                this.tvPr.text = "${data.percentage!!.toInt().toString()} %"
 //                this.sekk.progress = data.percentage!!.toInt()
 //                this.tvAuthor.text = "${data.author!!.firstName} ${data.author!!.lastName}"
-                Glide.with(context).load(data.image)
+                Glide.with(context).load(data.banner)
                     .into(this.ivCategory)
 //                this.tvName.text = data.name
 
@@ -72,7 +71,7 @@ class MenusAdapter(
         holder.itemView.setOnClickListener {
 
 
-            listener.onClick(item)
+            listener.onClick(item,position)
 
 
         }

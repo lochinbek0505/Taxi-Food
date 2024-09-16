@@ -22,13 +22,18 @@ import uz.falconmobile.taxifood.adapter.FoodAdapter
 import uz.falconmobile.taxifood.adapter.MenusAdapter
 import uz.falconmobile.taxifood.adapter.RestouranAdapter
 import uz.falconmobile.taxifood.databinding.FragmentHomeBinding
+import uz.falconmobile.taxifood.db.models.restouran_id_model
+import uz.falconmobile.taxifood.db.models.transfer_array
 import uz.falconmobile.taxifood.db.utilits.AppDao
 import uz.falconmobile.taxifood.db.utilits.AppDatabase
 import uz.falconmobile.taxifood.model.category_model
 import uz.falconmobile.taxifood.model.category_model2
+import uz.falconmobile.taxifood.model.food_change
 import uz.falconmobile.taxifood.model.food_model
 import uz.falconmobile.taxifood.model.restouran_model
+import uz.falconmobile.taxifood.ui.activity.OpenCategoryActivity
 import uz.falconmobile.taxifood.ui.activity.RestouranActivity
+import uz.falconmobile.taxifood.ui.activity.WishlistActivity
 
 class HomeFragment : Fragment() {
 
@@ -40,14 +45,13 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    lateinit var rate_model: ArrayList<restouran_id_model>
 
     private lateinit var database2: AppDatabase
     private lateinit var dao: AppDao
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -57,8 +61,13 @@ class HomeFragment : Fragment() {
         database2 = AppDatabase.getDatabase(requireActivity())
         dao = database2.appDao()
 
+        binding.btnWish.setOnClickListener {
 
-        binding.tvLoc.text=getStringData("adress","")
+            startActivity(Intent(requireActivity(), WishlistActivity::class.java))
+
+        }
+
+        binding.tvLoc.text = getStringData("adress", "")
         binding.tvLocatee.setOnClickListener {
 
             showAddressInputDialog()
@@ -67,8 +76,13 @@ class HomeFragment : Fragment() {
 
         readFoods()
         readCategory()
-        fetchAllMainDocuments()
+        CoroutineScope(Dispatchers.
+        Main).launch {
 
+
+            readAllMainCollections()
+
+        }
 
 //        getLocationName(39.961125, 66.484008)
 //        binding.rvRestouran.adapter = adapter2
@@ -111,19 +125,16 @@ class HomeFragment : Fragment() {
                 if (address.isEmpty()) {
 
                     Toast.makeText(
-                        requireActivity(),
-                        "Please fill in all fields.",
-                        Toast.LENGTH_SHORT
+                        requireActivity(), "Please fill in all fields.", Toast.LENGTH_SHORT
                     ).show()
 
                 } else {
                     saveData("adress", addressInput.text.toString())
-                    binding.tvLoc.text=getStringData("adress","")
+                    binding.tvLoc.text = getStringData("adress", "")
 
                 }
                 dialog.dismiss()
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            }.setNegativeButton("Cancel") { dialog, _ ->
                 dialog.cancel()  // Close the dialog
             }
 
@@ -132,44 +143,39 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun fetchAllMainDocuments() {
-        CoroutineScope(Dispatchers.Main).launch {
-            val mainDocuments = readAllMainCollections()
+    private fun fetchAllMainDocuments(
+        list: List<restouran_model>,
+        ids: List<String>,
+        rate_model: ArrayList<restouran_id_model>
+    ) {
 
-            Log.e("Res125", mainDocuments.toString())
+        Log.d("Firestoresss", "All users: $list")
 //
-            val adapter = RestouranAdapter(
-                requireActivity(),
-                mainDocuments,
-                object : RestouranAdapter.ItemSetOnClickListener {
-                    override fun onClick(data: restouran_model) {
+        val adapter = RestouranAdapter(requireActivity(),
+            list,
+            object : RestouranAdapter.ItemSetOnClickListener {
+                override fun onClick(data: restouran_model, position: Int) {
 
-                        var intent = Intent(requireActivity(), RestouranActivity::class.java)
+                    var intent = Intent(requireActivity(), RestouranActivity::class.java)
 
-                        intent.putExtra("Res", data)
+                    intent.putExtra("Res", data)
+                    intent.putExtra("Ids", transfer_array(ids[position], rate_model))
+                    startActivity(intent)
 
-                        startActivity(intent)
-
-                    }
-                })
-            binding.rvRestouran.adapter = adapter
-
-            if (mainDocuments != null) {
-                // Process the list of MainDocument data here (e.g., update UI)
-                for (document in mainDocuments) {
-                    println(document)
                 }
-            } else {
-                // Handle error (e.g., show error message)
-                println("Error reading data")
-            }
-        }
+            })
+        binding.rvRestouran.adapter = adapter
+
+
     }
 
-    private suspend fun readAllMainCollections(): List<restouran_model>? {
+    private suspend fun readAllMainCollections() {
         try {
-            val db = FirebaseFirestore.getInstance()
+            rate_model = arrayListOf()
 
+            print("WORKED WORKED WORKED")
+            val db = FirebaseFirestore.getInstance()
+            val ids = arrayListOf<String>()
             // Step 1: Get all documents from MainCollection
             val mainCollectionSnapshots = db.collection("restaurants").get().await()
 
@@ -180,33 +186,31 @@ class HomeFragment : Fragment() {
                 Log.e("Res125", mainDocSnapshot.toString())
 
                 // Step 2: Get SubCollection1 documents for this MainDocument
-                val subCollection1Snapshots = db.collection("restaurants")
-                    .document(mainDocSnapshot.id)
-                    .collection("types_of_food")
-                    .get()
-                    .await()
+                val subCollection1Snapshots =
+                    db.collection("restaurants").document(mainDocSnapshot.id)
+                        .collection("types_of_food").get().await()
 
+                ids.add(mainDocSnapshot.id)
                 val subCollection1List = mutableListOf<category_model>()
 
                 for (subDocSnapshot1 in subCollection1Snapshots) {
                     val subDocument1 = subDocSnapshot1.toObject(category_model::class.java)
+                    val ids = arrayListOf<String>()
 
-                    // Step 3: Get SubCollection2 documents for this SubDocument1
-                    val subCollection2Snapshots = db.collection("restaurants")
-                        .document(mainDocSnapshot.id)
-                        .collection("types_of_food")
-                        .document(subDocSnapshot1.id)
-                        .collection("foods")
-                        .get()
-                        .await()
+                    val subCollection2Snapshots =
+                        db.collection("restaurants").document(mainDocSnapshot.id)
+                            .collection("types_of_food").document(subDocSnapshot1.id)
+                            .collection("foods").get().await()
 
                     val subCollection2List = mutableListOf<food_model>()
                     for (subDocSnapshot2 in subCollection2Snapshots) {
-
+                        ids.add(subDocSnapshot2.id)
                         val subDocument2 = subDocSnapshot2.toObject(food_model::class.java)
                         subCollection2List.add(subDocument2)
 
                     }
+                    val restouran_id_model = restouran_id_model(subDocSnapshot1.id, ids)
+                    rate_model.add(restouran_id_model)
 
                     // Step 4: Add subCollection2 to subDocument1
                     val completeSubDocument1 = subDocument1.copy(foods = subCollection2List)
@@ -218,50 +222,48 @@ class HomeFragment : Fragment() {
                 mainDocumentsList.add(completeMainDocument)
             }
 
-            return mainDocumentsList // Return the list of all MainDocuments
+
+            fetchAllMainDocuments(mainDocumentsList, ids, rate_model)
 
         } catch (e: Exception) {
             e.printStackTrace()
             print(e.message)
-            return null
+            Log.d("Firestore45", "All users:$e")
+
         }
     }
 
     fun readFoods() {
         val userList = mutableListOf<food_model>()
 
-        database.collection("main_food")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val user = document.toObject(food_model::class.java)
-                    userList.add(user)
-                    viewAdapter2(userList)
-                }
-                Log.d("Firestore", "All users: $userList")
+        database.collection("main_food").get().addOnSuccessListener { result ->
+            for (document in result) {
+                val user = document.toObject(food_model::class.java)
+                userList.add(user)
+                viewAdapter2(userList)
             }
-            .addOnFailureListener { exception ->
-                Log.d("Firestore", "Error getting documents: ", exception)
-            }
+            Log.d("Firestore", "All users: $userList")
+        }.addOnFailureListener { exception ->
+            Log.d("Firestore", "Error getting documents: ", exception)
+        }
     }
 
 
     fun readCategory() {
         val userList = mutableListOf<category_model2>()
+        val ids = mutableListOf<String>()
+        database.collection("main_restaurants").get().addOnSuccessListener { result ->
+            for (document in result) {
+                val user = document.toObject(category_model2::class.java)
+                userList.add(user)
+                ids.add(document.id)
+            }
+            viewAdapter(userList, ids)
 
-        database.collection("category_food")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val user = document.toObject(category_model2::class.java)
-                    userList.add(user)
-                    viewAdapter(userList)
-                }
-                Log.d("Firestore", "All users: $userList")
-            }
-            .addOnFailureListener { exception ->
-                Log.d("Firestore", "Error getting documents: ", exception)
-            }
+            Log.d("Firestore", "All users: $userList")
+        }.addOnFailureListener { exception ->
+            Log.d("Firestore", "Error getting documents: ", exception)
+        }
     }
 
     fun viewAdapter2(list: MutableList<food_model>) {
@@ -279,12 +281,17 @@ class HomeFragment : Fragment() {
 
     }
 
-    fun viewAdapter(list: MutableList<category_model2>) {
+    fun viewAdapter(list: MutableList<category_model2>, ids: MutableList<String>) {
 
 
         val adapter =
             MenusAdapter(requireActivity(), list, object : MenusAdapter.ItemSetOnClickListener {
-                override fun onClick(data: category_model2) {
+                override fun onClick(data: category_model2, position: Int) {
+
+                    val change = food_change(data.type, ids[position])
+                    val intent = Intent(requireActivity(), OpenCategoryActivity::class.java)
+                    intent.putExtra("change", change)
+                    startActivity(intent)
 
                 }
             })

@@ -43,6 +43,10 @@ interface AppDao {
     @Query("DELETE FROM favorite_foods_table")
     suspend fun deleteAllFavoriteFoods()
 
+    @Query("DELETE FROM favorite_foods_table WHERE foodName = :foodName")
+    suspend fun deleteFoodByName(foodName: String)
+    @Query("SELECT COUNT(*) FROM favorite_foods_table WHERE foodName = :foodName")
+    suspend fun isFoodExists(foodName: String): Int
     // FavoriteRestaurants CRUD operations
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavoriteRestaurant(favoriteRestaurant: FavoriteRestaurants)
@@ -58,4 +62,9 @@ interface AppDao {
 
     @Query("DELETE FROM favorite_restaurants_table")
     suspend fun deleteAllFavoriteRestaurants()
+
+    @Query("DELETE FROM favorite_restaurants_table WHERE name = :restaurantName")
+    suspend fun deleteRestaurantByName(restaurantName: String)
+    @Query("SELECT COUNT(*) FROM favorite_restaurants_table WHERE name = :restaurantName")
+    suspend fun isRestaurantExists(restaurantName: String): Int
 }

@@ -18,7 +18,7 @@ class RestouranAdapter(
 
 
     interface ItemSetOnClickListener {
-        fun onClick(data: restouran_model)
+        fun onClick(data: restouran_model, position: Int)
     }
 
 
@@ -71,7 +71,7 @@ class RestouranAdapter(
         holder.itemView.setOnClickListener {
 
 
-            listener.onClick(item)
+            listener.onClick(item,position)
 
 
         }
