@@ -5,13 +5,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/ratingTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Please rate !"
-        android:textSize="18sp"
-        android:layout_gravity="center"/>
+
 
     <RatingBar
         android:id="@+id/ratingBar"

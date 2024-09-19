@@ -14,7 +14,7 @@ import uz.falconmobile.taxifood.model.food_model
 
 class OuterAdapter(
     val context: Context,
-    private val items: List<category_model>,
+    private var items: MutableList<category_model>,
     val list2: ArrayList<restouran_id_model>,
     val model: transfer_array,
     val listener: InnerAdapter.ItemSetOnClickListener,
@@ -27,7 +27,10 @@ class OuterAdapter(
         val binding = OuterItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return OuterViewHolder(binding)
     }
-
+    fun updateList(newItems: MutableList<category_model>) {
+        this.items = newItems
+        notifyDataSetChanged()
+    }
     override fun onBindViewHolder(holder: OuterViewHolder, position: Int) {
         val item = items[position]
         holder.binding.titleTextView.text = item.type
@@ -53,8 +56,8 @@ class OuterAdapter(
         holder.binding.outerItemLayout.setOnClickListener {
             isExpanded = !isExpanded
             holder.binding.innerRecyclerView.visibility =
-                if (isExpanded) View.VISIBLE else View.GONE
-            holder.binding.dropdownIcon.rotation = if (isExpanded) 180f else 0f
+                if (isExpanded) View.GONE else View.VISIBLE
+            holder.binding.dropdownIcon.rotation = if (isExpanded) 0f else 180f
         }
     }
 

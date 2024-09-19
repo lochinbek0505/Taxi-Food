@@ -1,0 +1,35 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Sorting options -->
+    <TextView android:text="Sort by" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <RadioGroup android:id="@+id/radioGroupSort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <RadioButton android:id="@+id/radioSortPrice" android:text="Price" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <RadioButton android:id="@+id/radioSortPopular" android:text="Popularity" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <RadioButton android:id="@+id/radioSortHighlyRated" android:text="Highly Rated" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    </RadioGroup>
+
+<!--    &lt;!&ndash; Price Range Filter &ndash;&gt;-->
+<!--    <TextView android:text="Price Range" android:layout_width="wrap_content" android:layout_height="wrap_content"/>-->
+<!--    <SeekBar android:id="@+id/seekBarMinPrice" android:max="1000" android:layout_width="match_parent" android:layout_height="wrap_content"/>-->
+<!--    <SeekBar android:id="@+id/seekBarMaxPrice" android:max="1000" android:layout_width="match_parent" android:layout_height="wrap_content"/>-->
+<!--    <TextView android:id="@+id/tvPriceRange" android:layout_width="wrap_content" android:layout_height="wrap_content"/>-->
+
+<!--    &lt;!&ndash; Star Rating Filter &ndash;&gt;-->
+<!--    <TextView android:text="Star Rating" android:layout_width="wrap_content" android:layout_height="wrap_content"/>-->
+<!--    <SeekBar android:id="@+id/seekBarRating" android:max="5" android:layout_width="match_parent" android:layout_height="wrap_content"/>-->
+<!--    <TextView android:id="@+id/tvStarRating" android:layout_width="wrap_content" android:layout_height="wrap_content"/>-->
+
+<!--    &lt;!&ndash; Veg/Non-Veg Filter &ndash;&gt;-->
+<!--    <TextView android:text="Food Type" android:layout_width="wrap_content" android:layout_height="wrap_content"/>-->
+<!--    <CheckBox android:id="@+id/checkBoxVeg" android:text="Veg" android:layout_width="wrap_content" android:layout_height="wrap_content"/>-->
+<!--    <CheckBox android:id="@+id/checkBoxNonVeg" android:text="Non-Veg" android:layout_width="wrap_content" android:layout_height="wrap_content"/>-->
+
+    <Button android:id="@+id/btnApply" android:text="Apply" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+</LinearLayout>

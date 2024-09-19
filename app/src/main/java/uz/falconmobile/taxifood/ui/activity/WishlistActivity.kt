@@ -29,6 +29,7 @@ class WishlistActivity : AppCompatActivity() {
         adapter.addFragment(FavoriteRestouranFragment(), "Restourans")
         adapter.addFragment(FavoriteFoodFragment(), "Foods")
 
+
         // Adding the Adapter to the ViewPager
         binding.viewPager.adapter = adapter
 

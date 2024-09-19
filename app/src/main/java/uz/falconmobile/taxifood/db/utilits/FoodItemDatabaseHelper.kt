@@ -54,7 +54,7 @@ class FoodItemDatabaseHelper(context: Context) :
             put(COLUMN_PRICE, foodModel.price)
             put(COLUMN_RATE, foodModel.rate)
             put(COLUMN_RATE_COUNT, foodModel.rate_count)
-            put(COLUMN_IS_VEG, if (foodModel.is_veg.toBoolean()) 1 else 0)
+            put(COLUMN_IS_VEG, if (foodModel.veg) 1 else 0)
         }
 
         val result = db.insert(TABLE_NAME, null, contentValues)
@@ -76,8 +76,8 @@ class FoodItemDatabaseHelper(context: Context) :
                     banner = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BANNER)),
                     price = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRICE)),
                     rate = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATE)),
-                    rate_count = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATE_COUNT)),
-                    is_veg = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IS_VEG))
+                    rate_count = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RATE_COUNT)),
+                    veg = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_VEG)) == 1
                 )
                 foodItems.add(foodItem)
             } while (cursor.moveToNext())
@@ -98,7 +98,7 @@ class FoodItemDatabaseHelper(context: Context) :
             put(COLUMN_PRICE, foodModel.price)
             put(COLUMN_RATE, foodModel.rate)
             put(COLUMN_RATE_COUNT, foodModel.rate_count)
-            put(COLUMN_IS_VEG, foodModel.is_veg)
+            put(COLUMN_IS_VEG, foodModel.veg)
         }
 
         val result = db.update(

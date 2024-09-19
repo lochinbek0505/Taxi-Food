@@ -2,10 +2,13 @@ package uz.falconmobile.taxifood.ui.activity
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.RadioGroup
 import android.widget.RatingBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,13 +37,17 @@ class RestouranActivity : AppCompatActivity() {
     private lateinit var database: AppDatabase
     private lateinit var dao: AppDao
     var check = false
+
+    private lateinit var foodList: MutableList<category_model>
+    private lateinit var outerAdapter: OuterAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityRestouranBinding.inflate(layoutInflater)
-//        fetchAllMainDocuments()
         setContentView(binding.root)
         dbHelper = FoodItemDatabaseHelper(this)
+
 
         var data = intent.getSerializableExtra("Res") as restouran_model
         var id1 = intent.getSerializableExtra("Ids") as transfer_array
@@ -48,18 +55,28 @@ class RestouranActivity : AppCompatActivity() {
 
 
         database = AppDatabase.getDatabase(this)
+
         dao = database.appDao()
+
+
+        binding.btnBack.setOnClickListener {
+
+
+            finish()
+
+        }
 
 
         CoroutineScope(Dispatchers.IO).launch {
 
-//            readAllMainCollections(id1.resId.toString())
             check = doesRestaurantExist(data.name)
+
             if (check) {
 
                 binding.ivWishlist.setImageResource(R.drawable.heart)
 
             }
+
         }
 
         var rate = data.rate.toDouble()
@@ -71,8 +88,9 @@ class RestouranActivity : AppCompatActivity() {
 
         }
 
-        viewAdapter(data.types_of_food.toMutableList(), id1.ids,id1)
+        viewAdapter(data.types_of_food.toMutableList(), id1.ids, id1)
 
+        foodList = data.types_of_food.toMutableList()
         binding.ivWishlist.setOnClickListener {
 
             if (!check) {
@@ -107,17 +125,36 @@ class RestouranActivity : AppCompatActivity() {
 
 
 
+
         binding.tvName.text = data.name
         binding.tvStar.text = data.rate
         binding.tvLocate.text = data.location
         binding.tvLenght.text = data.lenght
         binding.tvRateCount.text = "${data.rate_count} ratings"
 
+        binding.btnFilter.setOnClickListener {
+
+            showFilterSortDialog()
+
+        }
+
+        binding.btnVeg.setOnClickListener {
+
+            veg_sort()
+
+        }
+
+        binding.btnNonVeg.setOnClickListener {
+
+            non_veg_sort()
+
+        }
     }
 
     suspend fun doesRestaurantExist(name: String): Boolean {
         return dao.isRestaurantExists(name) > 0
     }
+
     fun updateDocument(
         collectionName: String,
         documentId: String,
@@ -201,7 +238,7 @@ class RestouranActivity : AppCompatActivity() {
         model: transfer_array
     ) {
 
-        val adapter =
+        outerAdapter =
             OuterAdapter(this, list, list2, model, object : InnerAdapter.ItemSetOnClickListener {
                 override fun onClick(data: food_model) {
 
@@ -223,7 +260,7 @@ class RestouranActivity : AppCompatActivity() {
                 }
             })
 
-        binding.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = outerAdapter
 
 
     }
@@ -273,9 +310,6 @@ class RestouranActivity : AppCompatActivity() {
             }
 
 
-
-
-
 //            viewAdapter(subCollection1List, rate_model)
 
         } catch (e: Exception) {
@@ -284,7 +318,159 @@ class RestouranActivity : AppCompatActivity() {
         }
     }
 
+    fun filterByStar() {
 
+        var sortedList = mutableListOf<category_model>()
+
+        sortedList =
+            foodList.sortedByDescending { it.foods.firstOrNull()?.rate?.toDouble() } as MutableList<category_model>
+        outerAdapter.updateList(sortedList)
+    }
+
+    fun filterByPopular() {
+
+        var sortedList = mutableListOf<category_model>()
+
+        sortedList =
+            foodList.sortedByDescending { it.foods.firstOrNull()?.rate_count?.toInt() } as MutableList<category_model>
+        outerAdapter.updateList(sortedList)
+    }
+
+    fun non_veg_sort() {
+
+        val sortedList = mutableListOf<category_model>()
+        for (category in foodList) {
+            val filteredFoods = category.foods.filter { !it.veg }
+            val updatedCategory = category.copy(foods = filteredFoods)
+            sortedList.add(updatedCategory)
+        }
+        outerAdapter.updateList(sortedList.toMutableList())
+
+
+    }
+
+    fun veg_sort() {
+
+        val sortedList = mutableListOf<category_model>()
+        for (category in foodList) {
+            val filteredFoods = category.foods.filter { it.veg }
+            val updatedCategory = category.copy(foods = filteredFoods)
+            sortedList.add(updatedCategory)
+        }
+        outerAdapter.updateList(sortedList.toMutableList())
+
+
+    }
+
+    private fun showFilterSortDialog() {
+        val dialog = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.filter_sort_bottom_sheet, null)
+        dialog.setContentView(view)
+
+        // Sort options
+        val radioGroupSort = view.findViewById<RadioGroup>(R.id.radioGroupSort)
+//        val seekBarMinPrice = view.findViewById<SeekBar>(R.id.seekBarMinPrice)
+//        val seekBarMaxPrice = view.findViewById<SeekBar>(R.id.seekBarMaxPrice)
+//        val seekBarRating = view.findViewById<SeekBar>(R.id.seekBarRating)
+//        val checkBoxVeg = view.findViewById<CheckBox>(R.id.checkBoxVeg)
+//        val checkBoxNonVeg = view.findViewById<CheckBox>(R.id.checkBoxNonVeg)
+
+        val btnApply = view.findViewById<Button>(R.id.btnApply)
+
+        btnApply.setOnClickListener {
+            val selectedSort = when (radioGroupSort.checkedRadioButtonId) {
+                R.id.radioSortPrice -> "price"
+                R.id.radioSortPopular -> "popularity"
+                R.id.radioSortHighlyRated -> "rating"
+                else -> ""
+            }
+
+//            val minPrice = seekBarMinPrice.progress
+//            val maxPrice = seekBarMaxPrice.progress
+//            val minRating = seekBarRating.progress
+//            val isVeg = checkBoxVeg.isChecked
+//            val isNonVeg = checkBoxNonVeg.isChecked
+
+            when (selectedSort) {
+
+                "price" -> {
+
+                    filterByPrice()
+
+                }
+
+                "popularity" -> {
+
+                    filterByPopular()
+
+                }
+
+                "rating" -> {
+
+                    filterByStar()
+
+                }
+
+            }
+//            applyFiltersAndSort(selectedSort, minPrice, maxPrice, minRating, isVeg, isNonVeg)
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    fun filterByPrice() {
+
+        var sortedList = mutableListOf<category_model>()
+
+        sortedList =
+            foodList.sortedByDescending { it.foods.firstOrNull()?.price?.toInt() } as MutableList<category_model>
+        outerAdapter.updateList(sortedList)
+
+    }
+
+    private fun applyFiltersAndSort(
+        selectedSort: String,
+        minPrice: Int,
+        maxPrice: Int,
+        minRating: Int,
+        isVeg: Boolean,
+        isNonVeg: Boolean
+    ) {
+        val filteredList = foodList.map { category ->
+            val filteredFoods = category.foods.filter { food ->
+                val price = food.price.toInt()
+                val rating = food.rate.toDouble()
+                val veg = food.veg
+                Log.e("AAASSS", "$price , $rating , $veg")
+
+                price in minPrice..maxPrice &&
+                        rating >= minRating &&
+                        (isVeg && veg || isNonVeg && !veg)
+
+            }
+            Log.e("AAASSS", filteredFoods.toString())
+
+            category.copy(foods = filteredFoods)
+        }
+
+        val sortedList = when (selectedSort) {
+            "price" -> filteredList.sortedBy { it.foods.firstOrNull()?.price?.toInt() }
+            "popularity" -> filteredList.sortedByDescending { it.foods.firstOrNull()?.rate_count?.toInt() }
+            "rating" -> filteredList.sortedByDescending { it.foods.firstOrNull()?.rate?.toDouble() }
+            else -> filteredList
+        }
+
+
+        Log.e("AAASSS", sortedList.toString())
+
+        outerAdapter.updateList(sortedList.toMutableList())
+    }
+
+    private fun getFoodList(): List<category_model> {
+        // Fetch your food list here
+        return listOf()
+    }
 
 }
 

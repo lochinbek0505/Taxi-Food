@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -69,7 +70,7 @@ class InnerAdapter(
         rate_view.text = data.rate
         rate_count_view.text = "${data.rate_count} ratings"
         Glide.with(context).load(data.banner).into(holder.binding.ivFood)
-        holder.binding.ivIsVeg.setImageResource(if (data.is_veg.toBoolean()) R.drawable.ic_veg else R.drawable.ic_non_veg)
+        holder.binding.ivIsVeg.setImageResource(if (data.veg) R.drawable.ic_veg else R.drawable.ic_non_veg)
         holder.binding.tvPrice.text = "$" + data.price
         holder.binding.tvDescription.text = data.description
         holder.binding.btnAdd.setOnClickListener {
@@ -106,7 +107,7 @@ class InnerAdapter(
                             foodName = data.name,
                             image = data.banner,
                             price = data.price,
-                            isVeg = data.is_veg.toBoolean(),
+                            isVeg = data.veg,
                             isFavorite = true,
                             star = data.rate,
                             star_count = data.rate_count.toString(),
@@ -191,7 +192,7 @@ class InnerAdapter(
                 // Define the fields to update
                 val updates = mapOf<String, Any>(
                     "rate" to String.format(Locale.US, "%.1f", rate).toString(),
-                    "rate_count" to count.toString()
+                    "rate_count" to count
                 )
 
                 updateDocument(
@@ -219,6 +220,8 @@ class InnerAdapter(
                 dialogInterface.dismiss()
             }
             .create()
+
+
 
         dialog.show()
     }

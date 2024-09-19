@@ -41,13 +41,12 @@ class HomeFragment : Fragment() {
 
     private lateinit var database: FirebaseFirestore
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     lateinit var rate_model: ArrayList<restouran_id_model>
 
     private lateinit var database2: AppDatabase
+
     private lateinit var dao: AppDao
 
     override fun onCreateView(
@@ -76,8 +75,9 @@ class HomeFragment : Fragment() {
 
         readFoods()
         readCategory()
-        CoroutineScope(Dispatchers.
-        Main).launch {
+        CoroutineScope(
+            Dispatchers.Main
+        ).launch {
 
 
             readAllMainCollections()
