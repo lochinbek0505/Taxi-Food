@@ -122,7 +122,10 @@ class RegisterFragment : Fragment() {
                                         name = firstName,
                                         email = email,
                                         number = phone,
-                                        locate = location
+                                        locate = location,
+
+                                        longtitude = getStringData("long", "")!!,
+                                        latitude = getStringData("lat", "")!!
                                     )
                                     dao.insertUser(data)
 

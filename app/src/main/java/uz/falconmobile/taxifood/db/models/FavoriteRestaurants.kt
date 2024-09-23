@@ -9,8 +9,10 @@ data class FavoriteRestaurants(
     val name: String = "",
     val image: String = "",
     val star: String = "",
-    val star_count:String="",
-    val lenght: String = "",
+    val star_count: String = "",
+    val latitude: String = "",
+    val longtitude: String = "",
+    val distance: String = "",
     val locate: String = "",
     val isFavorite: Boolean,
     val id: String = ""

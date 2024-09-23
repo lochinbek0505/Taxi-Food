@@ -101,7 +101,7 @@ class RestouranActivity : AppCompatActivity() {
                             image = data.banner,
                             star = data.rate,
                             star_count = data.rate_count,
-                            lenght = data.lenght,
+                            distance = data.distance,
                             locate = data.location,
                             isFavorite = true,
                             id = id1.resId.toString()
@@ -129,8 +129,16 @@ class RestouranActivity : AppCompatActivity() {
         binding.tvName.text = data.name
         binding.tvStar.text = data.rate
         binding.tvLocate.text = data.location
-        binding.tvLenght.text = data.lenght
+        binding.tvLenght.text ="${ data.distance } km"
         binding.tvRateCount.text = "${data.rate_count} ratings"
+
+        binding.btnClear.setOnClickListener {
+
+
+            outerAdapter.updateList(data.types_of_food.toMutableList())
+//            viewAdapter(data.types_of_food.toMutableList(), id1.ids, id1)
+
+        }
 
         binding.btnFilter.setOnClickListener {
 
@@ -361,6 +369,15 @@ class RestouranActivity : AppCompatActivity() {
 
 
     }
+    fun filterByPrice() {
+
+        var sortedList = mutableListOf<category_model>()
+
+        sortedList =
+            foodList.sortedByDescending { it.foods.firstOrNull()?.price?.toInt() } as MutableList<category_model>
+        outerAdapter.updateList(sortedList)
+
+    }
 
     private fun showFilterSortDialog() {
         val dialog = BottomSheetDialog(this)
@@ -419,15 +436,6 @@ class RestouranActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    fun filterByPrice() {
-
-        var sortedList = mutableListOf<category_model>()
-
-        sortedList =
-            foodList.sortedByDescending { it.foods.firstOrNull()?.price?.toInt() } as MutableList<category_model>
-        outerAdapter.updateList(sortedList)
-
-    }
 
     private fun applyFiltersAndSort(
         selectedSort: String,

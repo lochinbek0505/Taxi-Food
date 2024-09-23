@@ -14,7 +14,7 @@ class FoodItemDatabaseHelper(context: Context) :
         const val DATABASE_VERSION = 1
         const val TABLE_NAME = "FoodItem"
 
-        // Columns (without ID)
+        // Columns
         const val COLUMN_NAME = "name"
         const val COLUMN_DESCRIPTION = "description"
         const val COLUMN_BANNER = "banner"
@@ -27,7 +27,7 @@ class FoodItemDatabaseHelper(context: Context) :
     override fun onCreate(db: SQLiteDatabase?) {
         val createTableQuery = """
             CREATE TABLE $TABLE_NAME (
-                $COLUMN_NAME TEXT,
+                $COLUMN_NAME TEXT PRIMARY KEY,
                 $COLUMN_DESCRIPTION TEXT,
                 $COLUMN_BANNER TEXT,
                 $COLUMN_PRICE TEXT,
@@ -44,8 +44,25 @@ class FoodItemDatabaseHelper(context: Context) :
         onCreate(db)
     }
 
-    // Insert (Add) Food Item
+    // Check if a food item exists
+    fun foodItemExists(name: String): Boolean {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_NAME WHERE $COLUMN_NAME = ?",
+            arrayOf(name)
+        )
+        val exists = cursor.moveToFirst()
+        cursor.close()
+        db.close()
+        return exists
+    }
+
+    // Add Food Item if it doesn't exist
     fun addFoodItem(foodModel: food_model): Long {
+        if (foodItemExists(foodModel.name)) {
+            return -1L // Item already exists
+        }
+
         val db = writableDatabase
         val contentValues = ContentValues().apply {
             put(COLUMN_NAME, foodModel.name)
@@ -59,10 +76,10 @@ class FoodItemDatabaseHelper(context: Context) :
 
         val result = db.insert(TABLE_NAME, null, contentValues)
         db.close()
-        return result // Returns the new row ID
+        return result
     }
 
-    // Read (Get) All Food Items
+    // Read all food items
     fun getAllFoodItems(): List<food_model> {
         val foodItems = mutableListOf<food_model>()
         val db = readableDatabase
@@ -88,8 +105,8 @@ class FoodItemDatabaseHelper(context: Context) :
         return foodItems
     }
 
-    // Update Food Item
-    fun updateFoodItem(foodModel: food_model, name: String): Int {
+    // Update a food item
+    fun updateFoodItem(foodModel: food_model): Int {
         val db = writableDatabase
         val contentValues = ContentValues().apply {
             put(COLUMN_NAME, foodModel.name)
@@ -98,21 +115,37 @@ class FoodItemDatabaseHelper(context: Context) :
             put(COLUMN_PRICE, foodModel.price)
             put(COLUMN_RATE, foodModel.rate)
             put(COLUMN_RATE_COUNT, foodModel.rate_count)
-            put(COLUMN_IS_VEG, foodModel.veg)
+            put(COLUMN_IS_VEG, if (foodModel.veg) 1 else 0)
         }
 
         val result = db.update(
-            TABLE_NAME, contentValues, "$COLUMN_NAME = ?", arrayOf(name)
+            TABLE_NAME, contentValues, "$COLUMN_NAME = ?", arrayOf(foodModel.name)
         )
         db.close()
-        return result // Returns the number of rows affected
+        return result
     }
 
-    // Delete Food Item
+    fun deleteFull() {
+        val db = this.writableDatabase
+        db.beginTransaction()
+        try {
+            // Delete all data from each table
+            db.delete(TABLE_NAME, null, null)  // Delete all rows from 'requirements' table
+
+            db.setTransactionSuccessful()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            db.endTransaction()
+            db.close()
+        }
+    }
+
+    // Delete a food item
     fun deleteFoodItem(name: String): Int {
         val db = writableDatabase
         val result = db.delete(TABLE_NAME, "$COLUMN_NAME = ?", arrayOf(name))
         db.close()
-        return result // Returns the number of rows affected
+        return result
     }
 }

@@ -1,12 +1,11 @@
 package uz.falconmobile.taxifood.ui.activity
 
+import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import uz.falconmobile.taxifood.R
 import uz.falconmobile.taxifood.databinding.ActivityHomeBinding
 
@@ -21,6 +20,16 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.bottomNavigation
+
+
+
+
+        binding.fab.setOnClickListener {
+
+            startActivity(Intent(this, CardActivity::class.java))
+
+
+        }
 
         val navController = findNavController(R.id.nav_host_fragment_activity_home)
 //        binding.bottomNavigation.background=null

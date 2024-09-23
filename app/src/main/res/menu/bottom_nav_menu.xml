@@ -12,16 +12,16 @@
         android:title="Menu" />
 
     <item
-        android:id="@+id/navigation_notifications"
-        android:title="Cart"
-        android:enabled="false"/>
+        android:id="@+id/navigation_notifications2"
+        android:enabled="false"
+        android:title="Cart" />
     <item
-        android:id="@+id/grocery"
+        android:id="@+id/navigation_notifications"
         android:icon="@drawable/ic_grocery"
         android:title="Grocery" />
 
     <item
-        android:id="@+id/profil"
+        android:id="@+id/profilFragment"
         android:icon="@drawable/ic_profil"
         android:title="Profil" />
 

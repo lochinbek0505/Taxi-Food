@@ -33,7 +33,7 @@ class RestouranAdapter(
                 this.tvName.text = data.name
 //                this.ivRestouran.setImageResource(data.banner)
                 this.tvLocate.text = data.location
-                this.tvLenght.text = data.lenght
+                this.tvLenght.text = "${ data.distance } km"
 //                this.tvPr.text = "${data.percentage!!.toInt().toString()} %"
 //                this.sekk.progress = data.percentage!!.toInt()
 //                this.tvAuthor.text = "${data.author!!.firstName} ${data.author!!.lastName}"

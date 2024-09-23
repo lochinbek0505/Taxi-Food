@@ -1,60 +1,110 @@
 package uz.falconmobile.taxifood.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import uz.falconmobile.taxifood.R
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import uz.falconmobile.taxifood.adapter.FavoriteRestouranAdapter
+import uz.falconmobile.taxifood.databinding.FragmentFavoriteRestouranBinding
+import uz.falconmobile.taxifood.db.models.FavoriteRestaurants
+import uz.falconmobile.taxifood.db.utilits.AppDao
+import uz.falconmobile.taxifood.db.utilits.AppDatabase
+import uz.falconmobile.taxifood.ui.activity.FavoriteRestouranActivity
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [FavoriteRestouranFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FavoriteRestouranFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: FavoriteRestouranAdapter
+
+    private lateinit var database2: AppDatabase
+    private var binding: FragmentFavoriteRestouranBinding? = null
+
+    private lateinit var dao: AppDao
+    private var foodList: MutableList<FavoriteRestaurants> = mutableListOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
+        binding = FragmentFavoriteRestouranBinding.inflate(inflater, container, false)
+
+        val root: View = binding!!.root
+        database2 = AppDatabase.getDatabase(requireActivity())
+        dao = database2.appDao()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            foodList = dao.getAllFavoriteRestaurants().toMutableList()
+
+            Log.d("TAGgg", "onCreateView: $foodList")
+
+            showAdapter(foodList as ArrayList<FavoriteRestaurants>)
+        }
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorite_restouran, container, false)
+        return root
+
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FavoriteRestouranFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FavoriteRestouranFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    fun showAdapter(foodLIst: List<FavoriteRestaurants>) {
+
+        recyclerView = binding!!.recyclerView
+        // Initialize adapter
+        adapter = FavoriteRestouranAdapter(
+            requireActivity(),
+            foodLIst.toMutableList(),
+            object : FavoriteRestouranAdapter.ItemSetOnClickListener {
+                override fun onClick(data: FavoriteRestaurants, position: Int) {
+
+                    var intent = Intent(requireActivity(), FavoriteRestouranActivity::class.java)
+                    intent.putExtra("id123", data.id)
+                    startActivity(intent)
+
+                }
+            })
+
+
+        binding!!.recyclerView.adapter = adapter
+
+        // Implement swipe-to-delete functionality
+        val itemTouchHelperCallback =
+            object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val position = viewHolder.adapterPosition
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        dao.deleteFavoriteRestaurant(foodLIst[position])
+                        adapter.deleteItem(position)
+                        adapter.notifyItemRemoved(position)
+                    }
                 }
             }
+
+        // Attach ItemTouchHelper to RecyclerView
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(binding!!.recyclerView)
+
+
     }
+
 }

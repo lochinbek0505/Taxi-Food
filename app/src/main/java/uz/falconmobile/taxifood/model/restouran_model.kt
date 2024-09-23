@@ -10,7 +10,9 @@ data class restouran_model(
     val rate: String = "",
     val rate_count: String = "",
     val description: String = "",
-    val lenght: String = "",
+    val latitude: String = "",
+    val longtitude: String = "",
+    var distance: String = "",
     val location: String = "",
     val types_of_food: List<category_model> = listOf(),
 

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CartFragment">
+    tools:context=".ui.activity.CardActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,13 +16,13 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/white">
+            android:background="@color/colorPrimary">
 
             <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="15dp"
                 android:src="@drawable/baseline_arrow_back_ios_24" />
 
             <TextView
@@ -30,14 +31,12 @@
                 android:layout_centerInParent="true"
                 android:fontFamily="@font/peppins"
                 android:text="My Cart"
+                android:textColor="@color/white"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
         </RelativeLayout>
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
 
             <LinearLayout
@@ -55,16 +54,17 @@
                         android:id="@+id/tv_delivery"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="20dp"
                         android:layout_marginTop="10dp"
                         android:text="Delivered to"
-                        android:textSize="19sp" />
+                        android:textSize="18sp" />
 
                     <LinearLayout
+                        android:id="@+id/btn_full_locate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_delivery"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="15dp"
                         android:layout_marginTop="5dp"
                         android:gravity="center">
 
@@ -74,17 +74,21 @@
                             android:src="@drawable/baseline_location_on_24" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tv_locate"
+                            android:layout_width="180dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:fontFamily="sans-serif-medium"
+                            android:ellipsize="end"
+                            android:maxLines="1"
                             android:text="St. Samarkand"
-                            android:textSize="18sp" />
+                            android:textColor="@color/black"
+                            android:textSize="16sp" />
 
 
                     </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_change"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
@@ -95,29 +99,181 @@
                         android:textColor="@color/colorPrimary" />
                 </RelativeLayout>
 
-                <!--                <androidx.recyclerview.widget.RecyclerView-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="wrap_content"-->
-                <!--                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
-                <!--                    tools:listitem="@layout/cart_item_layout"-->
-                <!--                    />-->
-
                 <RelativeLayout
+                    android:id="@+id/empty"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent"
+
+                    >
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sub" />
+                        android:text="Cart is empty !"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:textColor="@color/black"
+                        android:layout_centerInParent="true"/>
 
                 </RelativeLayout>
 
 
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/all"
+                    android:visibility="gone"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="true"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:listitem="@layout/cart_item_layout" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="Sub total"
+                                android:textSize="19sp" />
+
+
+                            <TextView
+                                android:id="@+id/tv_sub_total"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="$ 170"
+                                android:textSize="20sp" />
+
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="Taxes &amp; Fees"
+                                android:textSize="19sp" />
+
+
+                            <TextView
+                                android:id="@+id/tv_taxee"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="$ 170"
+                                android:textSize="20sp" />
+
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="Delivery Fee"
+                                android:textSize="19sp" />
+
+
+                            <TextView
+                                android:id="@+id/tv_deliver"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="$ 170"
+                                android:textSize="20sp" />
+
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:text="Total"
+                                android:textColor="@color/black"
+                                android:textSize="21sp"
+                                android:textStyle="bold" />
+
+
+                            <TextView
+                                android:id="@+id/tv_price"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:text="$ 170"
+                                android:textColor="@color/black"
+                                android:textSize="21sp"
+                                android:textStyle="bold" />
+
+
+                        </RelativeLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_chekout"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="20dp"
+                            android:backgroundTint="@color/black"
+                            android:text="Checkout"
+                            android:textSize="20sp" />
+
+
+                    </LinearLayout>
+
+                </androidx.core.widget.NestedScrollView>
+
             </LinearLayout>
 
 
-        </ScrollView>
 
 
     </LinearLayout>

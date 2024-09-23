@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,6 +21,8 @@ import uz.falconmobile.taxifood.databinding.FragmentLoginBinding
 import uz.falconmobile.taxifood.db.models.UserData
 import uz.falconmobile.taxifood.db.utilits.AppDao
 import uz.falconmobile.taxifood.db.utilits.AppDatabase
+import uz.falconmobile.taxifood.db.utilits.DatabaseHelper
+import uz.falconmobile.taxifood.model.requerment_model
 import uz.falconmobile.taxifood.ui.activity.HomeActivity
 
 class LoginFragment : Fragment() {
@@ -34,7 +37,7 @@ class LoginFragment : Fragment() {
 
     private lateinit var database: AppDatabase
     private lateinit var dao: AppDao
-
+    private lateinit var reqHelper: DatabaseHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -51,6 +54,8 @@ class LoginFragment : Fragment() {
 
         database = AppDatabase.getDatabase(requireActivity())
         dao = database.appDao()
+
+        reqHelper = DatabaseHelper(requireActivity())
 
         binding.ivBack.setOnClickListener {
 
@@ -120,6 +125,8 @@ class LoginFragment : Fragment() {
             }
     }
 
+
+
     fun readDataWithoutDataClass(userid: String) {
         val docRef = db.collection("users").document(userid) // Replace with actual document ID
 
@@ -152,7 +159,9 @@ class LoginFragment : Fragment() {
                                 name = firstName!!,
                                 email = email!!,
                                 number = phone!!,
-                                locate = location!!
+                                locate = location!!,
+                                longtitude = getStringData("long", "")!!,
+                                latitude = getStringData("lat", "")!!
                             )
                         )
 

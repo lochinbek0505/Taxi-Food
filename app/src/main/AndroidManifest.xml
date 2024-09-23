@@ -17,6 +17,15 @@
         android:theme="@style/Theme.TaxiFood"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activity.HistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.SearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.FavoriteRestouranActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.WishlistActivity"
             android:exported="false" />
         <activity

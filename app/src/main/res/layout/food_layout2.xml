@@ -40,6 +40,7 @@
         android:backgroundTint="#FCF2FD"
         android:elevation="4dp"
         android:text="Add"
+        android:id="@+id/btn_add"
         android:textColor="@color/colorPrimary"
         android:textSize="17sp"
         app:cornerRadius="10dp"
@@ -71,6 +72,7 @@
                 />
 
             <LinearLayout
+                android:id="@+id/btn_rating"
                 android:layout_width="38dp"
                 android:layout_height="15dp"
                 android:layout_marginStart="5dp"
@@ -136,6 +138,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="110dp"
+                android:id="@+id/btn_wishlist"
                 android:layout_height="20dp"
                 android:layout_marginStart="10dp"
                 android:backgroundTint="#FFC0CB"
@@ -156,6 +159,7 @@
                         android:src="@drawable/baseline_bookmark_border_24" />
 
                     <TextView
+                        android:id="@+id/tv_save"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
