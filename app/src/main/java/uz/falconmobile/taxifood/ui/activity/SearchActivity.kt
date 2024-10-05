@@ -17,7 +17,9 @@ import uz.falconmobile.taxifood.adapter.FoodAdapter
 import uz.falconmobile.taxifood.databinding.ActivitySearchBinding
 import uz.falconmobile.taxifood.db.models.food_model2
 import uz.falconmobile.taxifood.db.utilits.FoodItemDatabaseHelper
+import uz.falconmobile.taxifood.db.utilits.FruitDatabaseHelper
 import uz.falconmobile.taxifood.model.food_model
+import uz.falconmobile.taxifood.model.order_food_model
 import java.util.Locale
 
 class SearchActivity : AppCompatActivity() {
@@ -25,7 +27,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var adapter: FoodAdapter
     private val allFoodList = mutableListOf<food_model2>()  // All fetched food items
     private val filteredFoodList = mutableListOf<food_model2>() // Filtered food items for display
-    lateinit var dbHelper2: FoodItemDatabaseHelper
+    lateinit var dbHelper: FruitDatabaseHelper
 
     // Register voice search activity launcher
     private val voiceSearchLauncher =
@@ -43,7 +45,7 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dbHelper2 = FoodItemDatabaseHelper(this)
+        dbHelper = FruitDatabaseHelper(this)
         setupRecyclerView()
         setupSearchBar()
         loadAllFoods() // Load all foods on activity start
@@ -57,27 +59,39 @@ class SearchActivity : AppCompatActivity() {
             filteredFoodList,
             object : FoodAdapter.ItemSetOnClickListener {
                 override fun onClick(data: food_model2) {
-                    if (dbHelper2.addFoodItem(
-                            food_model(
-                                data.name,
-                                data.description,
-                                data.banner,
-                                data.price,
-                                data.rate,
-                                data.rate_count,
-                                data.veg
+
+
+                    if (dbHelper.addFruitItem(
+                            order_food_model(
+                                name = "${data.name}",
+                                price = data.price,
+                                count = 1,
+                                imageUrl = data.banner,
+                                restouran = data.restouran
                             )
                         ) != -1L
                     ) {
 
-                        Toast.makeText(
-                            this@SearchActivity, "Successfully added", Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this@SearchActivity, "Food added already", Toast.LENGTH_SHORT
-                        ).show()
-                    }            // Handle item click
+
+                    }
+
+                }
+            }, object : FoodAdapter.ItemSetOnClickListener2 {
+                override fun onClick(count: Int, data: food_model2) {
+                    if (dbHelper.updateFruitItem(
+                            order_food_model(
+                                name = "${data.name}",
+                                price = data.price,
+                                count = count,
+                                imageUrl = data.banner,
+                                restouran = data.restouran
+                            )
+                        ) != -1
+                    ) {
+
+
+                    }
+
 
                 }
             })

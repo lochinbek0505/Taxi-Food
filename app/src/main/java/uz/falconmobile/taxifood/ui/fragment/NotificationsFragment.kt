@@ -5,15 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import uz.falconmobile.taxifood.adapter.FoodAdapter
 import uz.falconmobile.taxifood.databinding.FragmentNotificationsBinding
 import uz.falconmobile.taxifood.db.models.food_model2
-import uz.falconmobile.taxifood.db.utilits.FoodItemDatabaseHelper
-import uz.falconmobile.taxifood.model.food_model
+import uz.falconmobile.taxifood.db.utilits.FruitDatabaseHelper
+import uz.falconmobile.taxifood.model.order_food_model
 
 class NotificationsFragment : Fragment() {
 
@@ -22,7 +21,7 @@ class NotificationsFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    lateinit var dbHelper2: FoodItemDatabaseHelper
+    lateinit var dbHelper: FruitDatabaseHelper
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,7 +32,7 @@ class NotificationsFragment : Fragment() {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        dbHelper2 = FoodItemDatabaseHelper(requireActivity())
+        dbHelper = FruitDatabaseHelper(requireActivity())
         readFoods()
 
 
@@ -65,34 +64,44 @@ class NotificationsFragment : Fragment() {
 
 
         var adapter5 =
-            FoodAdapter(ids, requireActivity(), list, object : FoodAdapter.ItemSetOnClickListener {
-                override fun onClick(data: food_model2) {
+            FoodAdapter(ids, requireActivity(), list,
+                object : FoodAdapter.ItemSetOnClickListener {
+                    override fun onClick(data: food_model2) {
 
 
-                    if (dbHelper2.addFoodItem(
-                            food_model(
-                                data.name,
-                                data.description,
-                                data.banner,
-                                data.price,
-                                data.rate,
-                                data.rate_count,
-                                data.veg
-                            )
-                        ) != -1L
-                    ) {
+                        if (dbHelper.addFruitItem(
+                                order_food_model(
+                                    name = "${data.name}",
+                                    price = data.price,
+                                    count = 1,
+                                    imageUrl = data.banner,
+                                    restouran = data.restouran
+                                )
+                            ) != -1L
+                        ) {
 
-                        Toast.makeText(
-                            requireActivity(), "Successfully added", Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            requireActivity(), "Food added already", Toast.LENGTH_SHORT
-                        ).show()
+                        }
+
                     }
+                }, object : FoodAdapter.ItemSetOnClickListener2 {
+                    override fun onClick(count: Int, data: food_model2) {
+                        if (dbHelper.updateFruitItem(
+                                order_food_model(
+                                    name = "${data.name}",
+                                    price = data.price,
+                                    count = count,
+                                    imageUrl = data.banner,
+                                    restouran = data.restouran
+                                )
+                            ) != -1
+                        ) {
 
-                }
-            })
+
+                        }
+
+
+                    }
+                })
         val layoutManager = LinearLayoutManager(requireActivity())
 
         binding.rvFood.layoutManager = layoutManager

@@ -1,12 +1,15 @@
 package uz.falconmobile.taxifood.adapter
 
 import android.content.Context
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import uz.falconmobile.taxifood.databinding.FavoriteRestouranBinding
 import uz.falconmobile.taxifood.db.models.FavoriteRestaurants
+import java.util.Timer
+import java.util.TimerTask
 
 class FavoriteRestouranAdapter(
     val context: Context,
@@ -37,52 +40,72 @@ class FavoriteRestouranAdapter(
 //                this.tvPr.text = "${data.percentage!!.toInt().toString()} %"
 //                this.sekk.progress = data.percentage!!.toInt()
 //                this.tvAuthor.text = "${data.author!!.firstName} ${data.author!!.lastName}"
-                Glide.with(context).load(data.image)
-                    .into(this.ivRestouran)
+
 //                this.tvName.text = data.name
+                // Prepare banner images for ViewPager2
+                val banners = listOf(data.image, data.image2, data.image3)
+                val imagePagerAdapter = ImagePagerAdapter(context, banners)
+                this.viewPager.adapter = imagePagerAdapter
 
+                // Auto slide logic for carousel
+                val handler = Handler()
+                var currentPage = 0
+                val update = Runnable {
+                    if (currentPage == banners.size) {
+                        currentPage = 0
+                    }
+                    this.viewPager.setCurrentItem(currentPage++, true)
+                }
+
+                // Set timer for auto image slide (every 2 seconds)
+                val timer = Timer()
+                timer.schedule(object : TimerTask() {
+                    override fun run() {
+                        handler.post(update)
+                    }
+                }, 3000, 3000) // Delay of 2 seconds
             }
-
-
         }
 
 
+
+
+}
+
+override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+
+    val binding =
+        FavoriteRestouranBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+    return Holder(
+        binding
+    )
+
+
+}
+
+override fun onBindViewHolder(holder: Holder, position: Int) {
+    val item = items!![position]
+
+    holder.bind(item)
+
+
+
+    holder.itemView.setOnClickListener {
+
+
+        listener.onClick(item, position)
+
+
     }
+}
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-
-        val binding =
-            FavoriteRestouranBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-
-        return Holder(
-            binding
-        )
+fun deleteItem(position: Int) {
+    items!!.removeAt(position)
+    notifyItemRemoved(position)
+}
 
 
-    }
-
-    override fun onBindViewHolder(holder: Holder, position: Int) {
-        val item = items!![position]
-
-        holder.bind(item)
-
-
-
-        holder.itemView.setOnClickListener {
-
-
-            listener.onClick(item, position)
-
-
-        }
-    }
-
-    fun deleteItem(position: Int) {
-        items!!.removeAt(position)
-        notifyItemRemoved(position)
-    }
-
-
-    override fun getItemCount(): Int = items?.count()!!
+override fun getItemCount(): Int = items?.count()!!
 
 }

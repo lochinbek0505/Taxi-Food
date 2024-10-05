@@ -24,15 +24,17 @@ import uz.falconmobile.taxifood.db.models.transfer_array
 import uz.falconmobile.taxifood.db.utilits.AppDao
 import uz.falconmobile.taxifood.db.utilits.AppDatabase
 import uz.falconmobile.taxifood.db.utilits.FoodItemDatabaseHelper
+import uz.falconmobile.taxifood.db.utilits.FruitDatabaseHelper
 import uz.falconmobile.taxifood.model.category_model
 import uz.falconmobile.taxifood.model.food_model
+import uz.falconmobile.taxifood.model.order_food_model
 import uz.falconmobile.taxifood.model.restouran_model
 import java.util.Locale
 
 class FavoriteRestouranActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFavoriteRestouranBinding
-    lateinit var dbHelper: FoodItemDatabaseHelper
+    lateinit var dbHelper: FruitDatabaseHelper
     lateinit var rate_model: ArrayList<restouran_id_model>
     private lateinit var database: AppDatabase
     private lateinit var dao: AppDao
@@ -46,7 +48,7 @@ class FavoriteRestouranActivity : AppCompatActivity() {
         binding = ActivityFavoriteRestouranBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        dbHelper = FoodItemDatabaseHelper(this)
+        dbHelper = FruitDatabaseHelper(this)
         database = AppDatabase.getDatabase(this)
 
         dao = database.appDao()
@@ -163,11 +165,13 @@ class FavoriteRestouranActivity : AppCompatActivity() {
                     dao.insertFavoriteRestaurant(
                         FavoriteRestaurants(
                             name = data.name,
-                            image = data.banner,
+                            image = data.banner1,
+                            image2 = data.banner2,
+                            image3 = data.banner3,
                             star = data.rate,
                             star_count = data.rate_count,
                             distance = data.distance,
-                            locate = data.location,
+                            locate= data.location,
                             isFavorite = true,
                             id = id1.resId.toString()
                         )
@@ -194,7 +198,7 @@ class FavoriteRestouranActivity : AppCompatActivity() {
         binding.tvName.text = data.name
         binding.tvStar.text = data.rate
         binding.tvLocate.text = data.location
-        binding.tvLenght.text = "${ data.distance } km"
+        binding.tvLenght.text = "${data.distance} km"
         binding.tvRateCount.text = "${data.rate_count} ratings"
 
         binding.btnFilter.setOnClickListener {
@@ -306,26 +310,45 @@ class FavoriteRestouranActivity : AppCompatActivity() {
     ) {
 
         outerAdapter =
-            OuterAdapter(this, list, list2, model, object : InnerAdapter.ItemSetOnClickListener {
-                override fun onClick(data: food_model) {
+            OuterAdapter(this, list, list2, model,
+                object : InnerAdapter.ItemSetOnClickListener {
+                    override fun onClick(data: food_model) {
 
-                    if (dbHelper.addFoodItem(data) != -1L) {
+                        if (dbHelper.addFruitItem(
+                                order_food_model(
+                                    data.banner,
+                                    data.name,
+                                    data.price,
+                                    1,
+                                    data.restouran
+                                )
+                            ) != -1L
+                        ) {
 
 
-                        Toast.makeText(
-                            this@FavoriteRestouranActivity,
-                            "Successfully added",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this@FavoriteRestouranActivity,
-                            "Failed to add item",
-                            Toast.LENGTH_SHORT
-                        ).show()
+
+                        }
+
+
                     }
-                }
-            })
+                }, object : InnerAdapter.ItemSetOnClickListener2 {
+                    override fun onClick(data: food_model, count: Int) {
+                        if (dbHelper.updateFruitItem(
+                                order_food_model(
+                                    data.banner,
+                                    data.name,
+                                    data.price,
+                                    count,
+                                    data.restouran
+                                )
+                            ) != -1
+                        ) {
+
+
+                        }
+
+                    }
+                })
 
         binding.recyclerView.adapter = outerAdapter
 

@@ -49,6 +49,7 @@ import uz.falconmobile.taxifood.model.category_model
 import uz.falconmobile.taxifood.model.category_model2
 import uz.falconmobile.taxifood.model.food_change
 import uz.falconmobile.taxifood.model.food_model
+import uz.falconmobile.taxifood.model.order_food_model
 import uz.falconmobile.taxifood.model.requerment_model
 import uz.falconmobile.taxifood.model.restouran_model
 import uz.falconmobile.taxifood.ui.activity.OpenCategoryActivity
@@ -201,8 +202,11 @@ class HomeFragment : Fragment() {
 
         if (b) {
             readFoods()
+            adapter5.notifyDataSetChanged()
+
         } else {
             readFruits()
+            adapter6.notifyDataSetChanged()
         }
 
     }
@@ -354,6 +358,7 @@ class HomeFragment : Fragment() {
 
         Log.d("Firestoresss", "All users: $list")
 //
+
         val adapter = RestouranAdapter(
             requireActivity(),
             list,
@@ -518,8 +523,9 @@ class HomeFragment : Fragment() {
                 val user = document.toObject(food_model2::class.java)
                 foodList.add(user)
                 ids.add(document.id)
-                viewAdapter2(foodList, ids)
             }
+            viewAdapter2(foodList, ids)
+
             Log.d("Firestore", "All users: $foodList")
         }.addOnFailureListener { exception ->
             Log.d("Firestore", "Error getting documents: ", exception)
@@ -529,36 +535,46 @@ class HomeFragment : Fragment() {
 
     fun viewAdapter2(list: MutableList<food_model2>, ids: ArrayList<String>) {
 
-
         adapter5 =
-            FoodAdapter(ids, requireActivity(), list, object : FoodAdapter.ItemSetOnClickListener {
-                override fun onClick(data: food_model2) {
+            FoodAdapter(ids, requireActivity(), list,
+                object : FoodAdapter.ItemSetOnClickListener {
+                    override fun onClick(data: food_model2) {
 
 
-                    if (dbHelper2.addFoodItem(
-                            food_model(
-                                data.name,
-                                data.description,
-                                data.banner,
-                                data.price,
-                                data.rate,
-                                data.rate_count,
-                                data.veg
-                            )
-                        ) != -1L
-                    ) {
+                        if (dbHelper.addFruitItem(
+                                order_food_model(
+                                    name = "${data.name}",
+                                    price = data.price,
+                                    count = 1,
+                                    imageUrl = data.banner,
+                                    restouran = data.restouran
+                                )
+                            ) != -1L
+                        ) {
 
-                        Toast.makeText(
-                            requireActivity(), "Successfully added", Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            requireActivity(), "Food added already", Toast.LENGTH_SHORT
-                        ).show()
+
+                        }
+
                     }
+                }, object : FoodAdapter.ItemSetOnClickListener2 {
+                    override fun onClick(count: Int, data: food_model2) {
+                        if (dbHelper.updateFruitItem(
+                                order_food_model(
+                                    name = "${data.name}",
+                                    price = data.price,
+                                    count = count,
+                                    imageUrl = data.banner,
+                                    restouran = data.restouran
+                                )
+                            ) != -1
+                        ) {
 
-                }
-            })
+
+                        }
+
+
+                    }
+                })
         val layoutManager = LinearLayoutManager(requireActivity())
 
         binding.rvFood.layoutManager = layoutManager
@@ -576,19 +592,36 @@ class HomeFragment : Fragment() {
             list,
             object : FruitAdapter.ItemSetOnClickListener {
                 override fun onClick(data: fruit_model) {
-                    if (dbHelper.addFruitItem(data) != -1L) {
+                    if (dbHelper.addFruitItem(
+                            order_food_model(
+                                name = "${data.name} - ${data.quanty}",
+                                price = data.price,
+                                count = 1,
+                                imageUrl = data.banner,
+                                restouran = data.restouran
+                            )
+                        ) != -1L
+                    ) {
 
-
-                        Toast.makeText(
-                            requireActivity(), "Successfully added", Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            requireActivity(), "Failed to add item", Toast.LENGTH_SHORT
-                        ).show()
                     }
 
                 }
+            }, object : FruitAdapter.ItemSetOnClickListener2 {
+                override fun onClick(data: fruit_model, count: Int) {
+                    if (dbHelper.updateFruitItem(
+                            order_food_model(
+                                name = "${data.name} - ${data.quanty}",
+                                price = data.price,
+                                count = count,
+                                imageUrl = data.banner,
+                                restouran = data.restouran
+                            )
+                        ) != -1
+                    ) {
+
+                    }
+                }
+
             })
         val layoutManager = GridLayoutManager(requireActivity(), 2)
 
@@ -601,6 +634,7 @@ class HomeFragment : Fragment() {
 
     fun readFruits() {
         fruitList.clear()
+
 //        val userList = mutableListOf<fruit_model>()
         val idss = arrayListOf<String>()
         database.collection("fruits_vegetables").get().addOnSuccessListener { result ->
@@ -668,11 +702,11 @@ class HomeFragment : Fragment() {
 //            foodList.sortedByDescending { it.firstOrNull()?.rate?.toDouble() } as MutableList<category_model>
             adapter5.updateList(sortedList)
         } else {
-            var sortedList = mutableListOf<fruit_model>()
-
-            sortedList =
-                fruitList.sortedByDescending { it.rate_count?.toInt() } as MutableList<fruit_model>
-            adapter6.updateList(sortedList)
+//            var sortedList = mutableListOf<fruit_model>()
+//
+//            sortedList =
+//                fruitList.sortedByDescending { it.rate_count?.toInt() } as MutableList<fruit_model>
+//            adapter6.updateList(sortedList)
         }
     }
 
@@ -685,11 +719,13 @@ class HomeFragment : Fragment() {
                 foodList.sortedByDescending { it.rate_count?.toInt() } as MutableList<food_model2>
             adapter5.updateList(sortedList)
         } else {
-            var sortedList = mutableListOf<fruit_model>()
 
-            sortedList =
-                fruitList.sortedByDescending { it.rate_count?.toInt() } as MutableList<fruit_model>
-            adapter6.updateList(sortedList)
+
+//            var sortedList = mutableListOf<fruit_model>()
+//
+//            sortedList =
+//                fruitList.sortedByDescending { it.rate_count?.toInt() } as MutableList<fruit_model>
+//            adapter6.updateList(sortedList)
         }
     }
 

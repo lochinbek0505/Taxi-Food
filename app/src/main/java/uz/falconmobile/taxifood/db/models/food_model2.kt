@@ -10,5 +10,7 @@ data class food_model2(
     val rate: String = "",
     val rate_count: Int = 0,
     val veg: Boolean = false,
+    val restouran: String="",
+
     val cat_id: String = "",
 ) : Serializable

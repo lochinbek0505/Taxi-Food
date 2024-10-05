@@ -5,6 +5,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
@@ -17,6 +18,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -105,37 +108,8 @@ class CardActivity : AppCompatActivity() {
         )
         binding.btnChekout.setOnClickListener {
 
-            orderRepository = OrderRepository()
-            Log.w("OrderRepository12", "1")
-
-            val currentTime = LocalDateTime.now()
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-            val formattedTime = currentTime.format(formatter)
             CoroutineScope(Dispatchers.Main).launch {
-                // Sample order
-                val order = order_model(
-                    customerName = dao.getAllUsers()[0].name,
-                    isConfirmed = false,
-                    location = getStringData("adress", "").toString(),
-                    latitute =getStringData("lat", "")!!.toDouble() ,
-                    longtute = getStringData("long", "")!!.toDouble(),
-                    orderId = System.currentTimeMillis().toString(),
-                    orderTime = formattedTime,
-                    phone = dao.getAllUsers()[0].number,
-                    subTotal = priceList[0],
-                    taxPrice = priceList[1],
-                    deliveryPrice = priceList[2],
-                    total = priceList[3],
-
-                    orderedFood = mainList as ArrayList<order_food_model>
-                )
-                Log.w("OrderRepository12", "2")
-
-                // Write the order to Firebase
-                orderRepository.writeOrderToFirebase(order, this@CardActivity)
-//                showFoods(distance, data)
-
-
+                showContact(dao.getAllUsers()[0].number)
             }
         }
 
@@ -167,6 +141,86 @@ class CardActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showContact(phone: String) {
+        // Create a LinearLayout to wrap the TextInputLayout
+        val container = LinearLayout(this)
+        container.orientation = LinearLayout.VERTICAL
+        container.setPadding(50, 0, 50, 0) // Optional padding to make it look better
+
+        // Create a TextInputLayout to wrap the MaterialEditText
+        val textInputLayout = TextInputLayout(this)
+        val editText = TextInputEditText(this)
+
+        // Customize the TextInputLayout and EditText
+        textInputLayout.hint = "Enter your phone number"
+        editText.setText(phone)
+        textInputLayout.addView(editText)
+
+        // Add the TextInputLayout to the container
+        container.addView(textInputLayout)
+
+        // Create an AlertDialog
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle("Phone Number")
+            .setMessage("    ")
+            .setView(container) // Set the custom view
+            .setPositiveButton("Ok") { dialog: DialogInterface, _: Int ->
+                val inputText = editText.text.toString()
+                // Handle the input text
+
+                if (inputText.isNotEmpty()) {
+
+                orderRepository = OrderRepository()
+                Log.w("OrderRepository12", "1")
+
+                val currentTime = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                val formattedTime = currentTime.format(formatter)
+                CoroutineScope(Dispatchers.Main).launch {
+                    // Sample order
+                    val order = order_model(
+                        customerName = dao.getAllUsers()[0].name,
+                        isConfirmed = false,
+                        location = getStringData("adress", "").toString(),
+                        latitute = getStringData("lat", "")!!.toDouble(),
+                        longtute = getStringData("long", "")!!.toDouble(),
+                        orderId = System.currentTimeMillis().toString(),
+                        orderTime = formattedTime,
+                        phone = inputText,
+                        subTotal = priceList[0],
+                        taxPrice = priceList[1],
+                        deliveryPrice = priceList[2],
+                        total = priceList[3],
+                        orderedFood = mainList as ArrayList<order_food_model>
+                    )
+                    Log.w("OrderRepository12", "2")
+
+                    // Write the order to Firebase
+                    orderRepository.writeOrderToFirebase(order, this@CardActivity)
+//                showFoods(distance, data)
+                    dialog.dismiss()
+                }
+
+
+                }
+                else{
+
+                    Toast.makeText(this, "Please input phone number", Toast.LENGTH_SHORT).show()
+
+                }
+
+
+
+            }
+            .setNegativeButton("Cancel") { dialog: DialogInterface, _: Int ->
+                dialog.cancel()
+            }
+            .create()
+
+        // Show the dialog
+        alertDialog.show()
+    }
 
     private fun showFoods(dintance: Float, model: requerment_model) {
 
@@ -176,14 +230,26 @@ class CardActivity : AppCompatActivity() {
         for (allFruitItem in fruitHelper.getAllFruitItems()) {
             mainList.add(
                 order_food_model(
-                    allFruitItem.banner, allFruitItem.name, allFruitItem.price, 1
+                    allFruitItem.imageUrl,
+                    allFruitItem.name,
+                    allFruitItem.price,
+                    allFruitItem.count,
+                    allFruitItem.restouran
                 )
             )
         }
 
         for (foodItem in foodHelper.getAllFoodItems()) {
 
-            mainList.add(order_food_model(foodItem.banner, foodItem.name, foodItem.price, 1))
+            mainList.add(
+                order_food_model(
+                    foodItem.banner,
+                    foodItem.name,
+                    foodItem.price,
+                    1,
+                    foodItem.restouran
+                )
+            )
 
         }
 
@@ -239,7 +305,6 @@ class CardActivity : AppCompatActivity() {
                 binding.empty.visibility = View.VISIBLE
             }
             // Handle what happens when an item is removed, like showing a toast
-            Toast.makeText(this, "Item removed", Toast.LENGTH_SHORT).show()
         })
 
         binding.recyclerView.adapter = cartAdapter

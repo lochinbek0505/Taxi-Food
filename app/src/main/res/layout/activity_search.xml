@@ -10,11 +10,11 @@
         android:id="@+id/searchLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp"
-
         android:layout_margin="15dp"
         android:background="@drawable/search_layout"
+
+        android:orientation="horizontal"
+        android:padding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -30,7 +30,7 @@
             android:hint="Search for food..."
             android:imeOptions="actionSearch"
             android:inputType="text"
-            android:padding="12dp"
+            android:padding="8dp"
             android:textSize="16sp" />
 
         <!-- Microphone Icon for Voice Search -->

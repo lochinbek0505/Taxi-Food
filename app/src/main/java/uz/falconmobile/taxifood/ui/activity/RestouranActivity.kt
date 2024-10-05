@@ -1,13 +1,20 @@
 package uz.falconmobile.taxifood.ui.activity
 
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.RadioGroup
 import android.widget.RatingBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import uz.falconmobile.taxifood.R
 import uz.falconmobile.taxifood.adapter.InnerAdapter
+import uz.falconmobile.taxifood.adapter.MenuRestouranAdapter
 import uz.falconmobile.taxifood.adapter.OuterAdapter
 import uz.falconmobile.taxifood.databinding.ActivityRestouranBinding
 import uz.falconmobile.taxifood.db.models.FavoriteRestaurants
@@ -23,16 +31,18 @@ import uz.falconmobile.taxifood.db.models.restouran_id_model
 import uz.falconmobile.taxifood.db.models.transfer_array
 import uz.falconmobile.taxifood.db.utilits.AppDao
 import uz.falconmobile.taxifood.db.utilits.AppDatabase
-import uz.falconmobile.taxifood.db.utilits.FoodItemDatabaseHelper
+import uz.falconmobile.taxifood.db.utilits.FruitDatabaseHelper
 import uz.falconmobile.taxifood.model.category_model
 import uz.falconmobile.taxifood.model.food_model
+import uz.falconmobile.taxifood.model.menu_model
+import uz.falconmobile.taxifood.model.order_food_model
 import uz.falconmobile.taxifood.model.restouran_model
 import java.util.Locale
 
 class RestouranActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRestouranBinding
-    lateinit var dbHelper: FoodItemDatabaseHelper
+    lateinit var dbHelper: FruitDatabaseHelper
     lateinit var rate_model: ArrayList<restouran_id_model>
     private lateinit var database: AppDatabase
     private lateinit var dao: AppDao
@@ -41,23 +51,41 @@ class RestouranActivity : AppCompatActivity() {
     private lateinit var foodList: MutableList<category_model>
     private lateinit var outerAdapter: OuterAdapter
 
+    private lateinit var menu_list: ArrayList<menu_model>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityRestouranBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dbHelper = FoodItemDatabaseHelper(this)
+        dbHelper = FruitDatabaseHelper(this)
 
 
         var data = intent.getSerializableExtra("Res") as restouran_model
         var id1 = intent.getSerializableExtra("Ids") as transfer_array
         Log.e("TAAG", data.toString())
 
-
+        menu_list = arrayListOf()
         database = AppDatabase.getDatabase(this)
 
         dao = database.appDao()
 
+        data.types_of_food.forEach {
+
+            var count = 0
+            it.foods.forEach {
+
+                count++
+
+            }
+
+            menu_list.add(menu_model(it.type, count.toString()))
+        }
+
+        binding.cvMenu.setOnClickListener {
+
+            showBottomDialog(menu_list)
+            binding.cvMenu.visibility = View.INVISIBLE
+        }
 
         binding.btnBack.setOnClickListener {
 
@@ -98,7 +126,9 @@ class RestouranActivity : AppCompatActivity() {
                     dao.insertFavoriteRestaurant(
                         FavoriteRestaurants(
                             name = data.name,
-                            image = data.banner,
+                            image = data.banner1,
+                            image2 = data.banner2,
+                            image3 = data.banner3,
                             star = data.rate,
                             star_count = data.rate_count,
                             distance = data.distance,
@@ -129,7 +159,7 @@ class RestouranActivity : AppCompatActivity() {
         binding.tvName.text = data.name
         binding.tvStar.text = data.rate
         binding.tvLocate.text = data.location
-        binding.tvLenght.text ="${ data.distance } km"
+        binding.tvLenght.text = "${data.distance} km"
         binding.tvRateCount.text = "${data.rate_count} ratings"
 
         binding.btnClear.setOnClickListener {
@@ -157,6 +187,72 @@ class RestouranActivity : AppCompatActivity() {
             non_veg_sort()
 
         }
+    }
+
+
+    private fun showBottomDialog(list: ArrayList<menu_model>) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.menu_lalerd_dialog_ayout, null)
+        val recyclerView = dialogView.findViewById<RecyclerView>(R.id.rv_menu_adapter)
+
+        // Set up RecyclerView (replace with your adapter and data)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter =
+            MenuRestouranAdapter(this, list, object : MenuRestouranAdapter.ItemSetOnClickListener {
+                override fun onClick(data: menu_model) {
+
+                }
+            }) // Replace with your adapter
+
+
+        val dialog =
+            AlertDialog.Builder(this, R.style.AlertDialogCustom)
+                .setView(dialogView)
+                .setCancelable(true)
+                .setOnCancelListener {
+                    // Call the function when dialog is canceled
+                    onDialogCanceled()
+                }
+                .create()
+
+        dialog.setOnShowListener {
+            // Set the position to the bottom
+            dialog.window?.apply {
+                setGravity(Gravity.BOTTOM or Gravity.END)
+                setBackgroundDrawableResource(android.R.color.transparent)
+
+//                val displayMetrics = resources.displayMetrics
+//                val screenWidth = 500
+//
+//                // Set custom size (replace with your desired width and height)
+//                val marginInDp = 20 // Set desired margin (20dp in this case)
+                val width = 550 // Subtract margins from both sides
+                val height =
+                    WindowManager.LayoutParams.WRAP_CONTENT  // Custom height in dp (e.g., 400dp)
+
+                setLayout(width, height)
+//
+
+
+//                setLayout(
+//                    WindowManager.LayoutParams.WRAP_CONTENT,
+//                    WindowManager.LayoutParams.WRAP_CONTENT
+//                )
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun convertDpToPixel(dp: Int): Int {
+        val displayMetrics = resources.displayMetrics
+        return (dp * (displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT))
+    }
+
+    // Function to be called when dialog is canceled
+    private fun onDialogCanceled() {
+        // Your logic here
+        // For example, show a Toast message or trigger an action
+        binding.cvMenu.visibility = View.VISIBLE
     }
 
     suspend fun doesRestaurantExist(name: String): Boolean {
@@ -247,26 +343,42 @@ class RestouranActivity : AppCompatActivity() {
     ) {
 
         outerAdapter =
-            OuterAdapter(this, list, list2, model, object : InnerAdapter.ItemSetOnClickListener {
-                override fun onClick(data: food_model) {
+            OuterAdapter(this, list, list2, model,
+                object : InnerAdapter.ItemSetOnClickListener {
+                    override fun onClick(data: food_model) {
 
-                    if (dbHelper.addFoodItem(data) != -1L) {
+                        if (dbHelper.addFruitItem(
+                                order_food_model(
+                                    data.banner,
+                                    data.name,
+                                    data.price,
+                                    1,
+                                    data.restouran
+                                )
+                            ) != -1L
+                        ) {
 
 
-                        Toast.makeText(
-                            this@RestouranActivity,
-                            "Successfully added",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this@RestouranActivity,
-                            "Failed to add item",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        }
                     }
-                }
-            })
+                }, object : InnerAdapter.ItemSetOnClickListener2 {
+                    override fun onClick(data: food_model, count: Int) {
+                        if (dbHelper.updateFruitItem(
+                                order_food_model(
+                                    data.banner,
+                                    data.name,
+                                    data.price,
+                                    count,
+                                    data.restouran
+                                )
+                            ) != -1
+                        ) {
+
+
+                        }
+
+                    }
+                })
 
         binding.recyclerView.adapter = outerAdapter
 
@@ -369,6 +481,7 @@ class RestouranActivity : AppCompatActivity() {
 
 
     }
+
     fun filterByPrice() {
 
         var sortedList = mutableListOf<category_model>()

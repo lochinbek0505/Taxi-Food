@@ -8,6 +8,7 @@ data class FoodModel(
     val price: String = "",
     val rate: String = "",
     val rate_count: String = "",
-    val is_veg: Boolean = false
+    val is_veg: Boolean = false,
+    val restouran: String,
 
 )

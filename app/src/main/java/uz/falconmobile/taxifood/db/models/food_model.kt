@@ -9,5 +9,7 @@ data class food_model(
     val price: String = "",
     val rate: String = "",
     val rate_count: Int = 0,
-    val veg: Boolean = false
-) : Serializable
+    val veg: Boolean = false,
+    val restouran: String,
+
+    ) : Serializable

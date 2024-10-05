@@ -5,9 +5,11 @@ import java.io.Serializable
 
 data class fruit_model(
     val name: String = "",
-    val weight: String = "",
+    val quanty: String = "",
     val banner: String = "",
     val price: String = "",
-    val rate: String = "",
-    val rate_count: Int = 0,
-) : Serializable
+    val tag1: String = "",
+    val tag2: String = "",
+    val restouran: String="",
+
+    ) : Serializable

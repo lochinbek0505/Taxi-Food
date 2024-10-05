@@ -3,10 +3,10 @@ package uz.falconmobile.taxifood.adapter
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -36,6 +36,7 @@ class InnerAdapter(
     private val items: List<food_model>,
     val list: restouran_id_model,
     var listener: ItemSetOnClickListener,
+    var listener2: ItemSetOnClickListener2,
     val position1: Int,
     var model: transfer_array
 ) :
@@ -50,6 +51,11 @@ class InnerAdapter(
         fun onClick(data: food_model)
     }
 
+    interface ItemSetOnClickListener2 {
+
+        fun onClick(data: food_model, count: Int)
+
+    }
 
     inner class InnerViewHolder(val binding: FoodLayoutBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -66,6 +72,7 @@ class InnerAdapter(
         rate_view = holder.binding.tvStar
         rate_count_view = holder.binding.tvCountStar
 
+        var count = 1
 
         rate_view.text = data.rate
         rate_count_view.text = "${data.rate_count} ratings"
@@ -75,9 +82,25 @@ class InnerAdapter(
         holder.binding.tvDescription.text = data.description
         holder.binding.btnAdd.setOnClickListener {
             listener.onClick(items[position])
+            holder.binding.btnAdd.visibility = View.GONE
+            holder.binding.cvCounter.visibility = View.VISIBLE
         }
 
+        holder.binding.addButton.setOnClickListener {
 
+            count++
+            holder.binding.foodCount.text = count.toString()
+            listener2.onClick(data, count)
+        }
+
+        // Handle the remove button click
+        holder.binding.removeButton.setOnClickListener {
+            if (count > 1) {
+                count--
+                holder.binding.foodCount.text = count.toString()
+                listener2.onClick(data, count)
+            }
+        }
         database = AppDatabase.getDatabase(context)
         dao = database.appDao()
 
@@ -89,6 +112,7 @@ class InnerAdapter(
 
             if (check) {
                 holder.binding.tvSave.text = "Saved to eatlist"
+                holder.binding.ivSaved.setImageResource(R.drawable.baseline_bookmark_24)
 
             }
         }
@@ -112,9 +136,12 @@ class InnerAdapter(
                             star = data.rate,
                             star_count = data.rate_count.toString(),
                             description = data.description,
+                            restouran = data.restouran,
                         )
                     )
                     holder.binding.tvSave.text = "Saved to eatlist"
+                    holder.binding.ivSaved.setImageResource(R.drawable.baseline_bookmark_24)
+
                     check = true
                 }
 
@@ -126,6 +153,7 @@ class InnerAdapter(
                     check = false
                     holder.binding.tvSave.text = "Save to eatlist"
 
+                    holder.binding.ivSaved.setImageResource(R.drawable.baseline_bookmark_border_24)
 
                 }
             }

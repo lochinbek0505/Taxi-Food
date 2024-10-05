@@ -8,6 +8,9 @@ data class FavoriteRestaurants(
     @PrimaryKey(autoGenerate = true) val restaurantId: Int = 0,
     val name: String = "",
     val image: String = "",
+    val image2: String = "",
+    val image3: String = "",
+
     val star: String = "",
     val star_count: String = "",
     val latitude: String = "",

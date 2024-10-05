@@ -18,7 +18,9 @@ class OuterAdapter(
     val list2: ArrayList<restouran_id_model>,
     val model: transfer_array,
     val listener: InnerAdapter.ItemSetOnClickListener,
-) : RecyclerView.Adapter<OuterAdapter.OuterViewHolder>() {
+    val listener2: InnerAdapter.ItemSetOnClickListener2,
+
+    ) : RecyclerView.Adapter<OuterAdapter.OuterViewHolder>() {
 
     inner class OuterViewHolder(val binding: OuterItemBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -27,10 +29,12 @@ class OuterAdapter(
         val binding = OuterItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return OuterViewHolder(binding)
     }
+
     fun updateList(newItems: MutableList<category_model>) {
         this.items = newItems
         notifyDataSetChanged()
     }
+
     override fun onBindViewHolder(holder: OuterViewHolder, position: Int) {
         val item = items[position]
         holder.binding.titleTextView.text = item.type
@@ -42,6 +46,11 @@ class OuterAdapter(
             object : InnerAdapter.ItemSetOnClickListener {
                 override fun onClick(data: food_model) {
                     listener.onClick(data)
+                }
+
+            }, object : InnerAdapter.ItemSetOnClickListener2 {
+                override fun onClick(data: food_model, count: Int) {
+                    listener2.onClick(data,count)
                 }
 
             },

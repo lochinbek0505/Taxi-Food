@@ -3,6 +3,7 @@ package uz.falconmobile.taxifood.adapter
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
@@ -27,8 +28,8 @@ class FoodAdapter(
     val context: Context,
     var items: MutableList<food_model2>,
     var listener: ItemSetOnClickListener,
-
-    ) :
+    var listener2: ItemSetOnClickListener2,
+) :
     RecyclerView.Adapter<FoodAdapter.Holder>() {
 
 
@@ -39,6 +40,10 @@ class FoodAdapter(
 
     interface ItemSetOnClickListener {
         fun onClick(data: food_model2)
+    }
+
+    interface ItemSetOnClickListener2 {
+        fun onClick(count: Int, data: food_model2)
     }
 
 
@@ -86,6 +91,7 @@ class FoodAdapter(
         rate_view = holder.view.tvStar
         rate_count_view = holder.view.tvCountStar
 
+        var count = 1
 
         rate_view.text = data.rate
         rate_count_view.text = "${data.rate_count} ratings"
@@ -95,9 +101,26 @@ class FoodAdapter(
         holder.view.tvDescription.text = data.description
         holder.view.btnAdd.setOnClickListener {
             listener.onClick(items[position])
+            holder.view.btnAdd.visibility = View.GONE
+            holder.view.cvCounter.visibility = View.VISIBLE
         }
 
 
+        holder.view.addButton.setOnClickListener {
+
+            count++
+            holder.view.foodCount.text = count.toString()
+            listener2.onClick(count, data)
+        }
+
+        // Handle the remove button click
+        holder.view.removeButton.setOnClickListener {
+            if (count > 1) {
+                count--
+                holder.view.foodCount.text = count.toString()
+                listener2.onClick(count, data)
+            }
+        }
         database = AppDatabase.getDatabase(context)
         dao = database.appDao()
 
@@ -108,6 +131,7 @@ class FoodAdapter(
             check = doesRestaurantExist(items[position].name)
 
             if (check) {
+                holder.view.ivSaved.setImageResource(R.drawable.baseline_bookmark_24)
                 holder.view.tvSave.text = "Saved to eatlist"
 
             }
@@ -138,9 +162,12 @@ class FoodAdapter(
                             star = data.rate,
                             star_count = data.rate_count.toString(),
                             description = data.description,
+                            restouran = data.restouran
                         )
                     )
                     holder.view.tvSave.text = "Saved to eatlist"
+                    holder.view.ivSaved.setImageResource(R.drawable.baseline_bookmark_24)
+
                     check = true
                 }
 
@@ -151,6 +178,7 @@ class FoodAdapter(
                     dao.deleteFoodByName(data.name)
                     check = false
                     holder.view.tvSave.text = "Save to eatlist"
+                    holder.view.ivSaved.setImageResource(R.drawable.baseline_bookmark_border_24)
 
 
                 }

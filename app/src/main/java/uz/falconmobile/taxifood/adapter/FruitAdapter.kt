@@ -3,6 +3,7 @@ package uz.falconmobile.taxifood.adapter
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
@@ -20,8 +21,8 @@ class FruitAdapter(
     val context: Context,
     var items: MutableList<fruit_model>,
     var listener: ItemSetOnClickListener,
-
-    ) :
+    var listener2: ItemSetOnClickListener2
+) :
     RecyclerView.Adapter<FruitAdapter.Holder>() {
 
     private lateinit var rate_view: TextView
@@ -31,6 +32,11 @@ class FruitAdapter(
         fun onClick(data: fruit_model)
     }
 
+    interface ItemSetOnClickListener2 {
+
+        fun onClick(data: fruit_model, count: Int)
+
+    }
 
     inner class Holder(var view: FruitBeverageLayoutBinding) : RecyclerView.ViewHolder(view.root) {
 
@@ -41,8 +47,15 @@ class FruitAdapter(
 
                 this.tvName.text = data.name
                 this.tvPrice.text = "$ ${data.price} "
-                this.tvWeight.text = data.weight
-                this.tvStar.text = "${data.rate}"
+                this.tvQuanty.text = data.quanty
+                if (data.tag1.isEmpty()) {
+                    this.cvTag1.visibility = View.GONE
+                }
+                if (data.tag2.isEmpty()) {
+                    this.cvTag2.visibility = View.GONE
+                }
+                this.tvTag1.text = data.tag1
+                this.tvTag2.text = data.tag2
                 Glide.with(context).load(data.banner)
                     .into(this.ivRestouran)
             }
@@ -67,24 +80,40 @@ class FruitAdapter(
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val item = items[position]
-        rate_view = holder.view.tvStar
-
-        holder.view.btnStar.setOnClickListener {
-            showRatingDialog(
-                item.rate.toDouble(),
-                item.rate_count.toInt(),
-                ids[position]
-            )
-
-        }
+        var count = 1
+//        rate_view = holder.view.tvStar
+//
+//        holder.view.btnStar.setOnClickListener {
+//            showRatingDialog(
+//                item.rate.toDouble(),
+//                item.rate_count.toInt(),
+//                ids[position]
+//            )
+//
+//        }
         holder.bind(item)
 
+        holder.view.addButton.setOnClickListener {
 
+            count++
+            holder.view.foodCount.text = count.toString()
+            listener2.onClick(item, count)
+        }
+
+        holder.view.removeButton.setOnClickListener {
+            if (count > 1) {
+                count--
+                holder.view.foodCount.text = count.toString()
+                listener2.onClick(item, count)
+            }
+        }
 
         holder.view.btnAdd.setOnClickListener {
 
             listener.onClick(item)
 
+            holder.view.btnAdd.visibility = View.GONE
+            holder.view.cvCounter.visibility = View.VISIBLE
 
         }
     }

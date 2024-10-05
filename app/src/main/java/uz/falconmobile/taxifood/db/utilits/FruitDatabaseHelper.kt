@@ -5,6 +5,8 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import uz.falconmobile.taxifood.db.models.fruit_model
+import uz.falconmobile.taxifood.db.utilits.FoodItemDatabaseHelper.Companion.COLUMN_RATE_COUNT
+import uz.falconmobile.taxifood.model.order_food_model
 
 class FruitDatabaseHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -16,22 +18,21 @@ class FruitDatabaseHelper(context: Context) :
 
         // Columns
         const val COLUMN_NAME = "name"
-        const val COLUMN_WEIGHT = "weight"
+        const val COLUMN_COUNT = "count"
         const val COLUMN_BANNER = "banner"
         const val COLUMN_PRICE = "price"
-        const val COLUMN_RATE = "rate"
-        const val COLUMN_RATE_COUNT = "rate_count"
+        const val RESTOURAN = "restouran"
+
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
         val createTableQuery = """
             CREATE TABLE $TABLE_NAME (
                 $COLUMN_NAME TEXT PRIMARY KEY,
-                $COLUMN_WEIGHT TEXT,
+                $COLUMN_COUNT INTEGER,
                 $COLUMN_BANNER TEXT,
                 $COLUMN_PRICE TEXT,
-                $COLUMN_RATE TEXT,
-                $COLUMN_RATE_COUNT INTEGER
+                $RESTOURAN TEXT
             )
         """
         db?.execSQL(createTableQuery)
@@ -56,7 +57,7 @@ class FruitDatabaseHelper(context: Context) :
     }
 
     // Add a Fruit Item if it doesn't exist
-    fun addFruitItem(fruit: fruit_model): Long {
+    fun addFruitItem(fruit: order_food_model): Long {
         if (fruitItemExists(fruit.name)) {
             return -1L // Item already exists
         }
@@ -64,11 +65,10 @@ class FruitDatabaseHelper(context: Context) :
         val db = writableDatabase
         val contentValues = ContentValues().apply {
             put(COLUMN_NAME, fruit.name)
-            put(COLUMN_WEIGHT, fruit.weight)
-            put(COLUMN_BANNER, fruit.banner)
+            put(COLUMN_COUNT, fruit.count)
+            put(COLUMN_BANNER, fruit.imageUrl)
             put(COLUMN_PRICE, fruit.price)
-            put(COLUMN_RATE, fruit.rate)
-            put(COLUMN_RATE_COUNT, fruit.rate_count)
+            put(RESTOURAN, fruit.restouran)
         }
 
         val result = db.insert(TABLE_NAME, null, contentValues)
@@ -77,20 +77,19 @@ class FruitDatabaseHelper(context: Context) :
     }
 
     // Get All Fruit Items
-    fun getAllFruitItems(): List<fruit_model> {
-        val fruitItems = mutableListOf<fruit_model>()
+    fun getAllFruitItems(): List<order_food_model> {
+        val fruitItems = mutableListOf<order_food_model>()
         val db = readableDatabase
         val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME", null)
 
         if (cursor.moveToFirst()) {
             do {
-                val fruitItem = fruit_model(
+                val fruitItem = order_food_model(
                     name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
-                    weight = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_WEIGHT)),
-                    banner = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BANNER)),
+                    count = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_COUNT)),
+                    imageUrl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BANNER)),
                     price = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRICE)),
-                    rate = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATE)),
-                    rate_count = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RATE_COUNT))
+                    restouran = cursor.getString(cursor.getColumnIndexOrThrow(RESTOURAN))
                 )
                 fruitItems.add(fruitItem)
             } while (cursor.moveToNext())
@@ -102,14 +101,14 @@ class FruitDatabaseHelper(context: Context) :
     }
 
     // Update a Fruit Item
-    fun updateFruitItem(fruit: fruit_model): Int {
+    fun updateFruitItem(fruit: order_food_model): Int {
         val db = writableDatabase
         val contentValues = ContentValues().apply {
-            put(COLUMN_WEIGHT, fruit.weight)
-            put(COLUMN_BANNER, fruit.banner)
+            put(COLUMN_COUNT, fruit.count)
+            put(COLUMN_BANNER, fruit.imageUrl)
             put(COLUMN_PRICE, fruit.price)
-            put(COLUMN_RATE, fruit.rate)
-            put(COLUMN_RATE_COUNT, fruit.rate_count)
+            put(RESTOURAN, fruit.restouran)
+            put(COLUMN_NAME,fruit.name)
         }
 
         val result = db.update(

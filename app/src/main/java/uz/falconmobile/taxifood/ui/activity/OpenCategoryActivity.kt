@@ -17,8 +17,10 @@ import uz.falconmobile.taxifood.adapter.FoodAdapter
 import uz.falconmobile.taxifood.databinding.ActivityOpenCategoryBinding
 import uz.falconmobile.taxifood.db.models.food_model2
 import uz.falconmobile.taxifood.db.utilits.FoodItemDatabaseHelper
+import uz.falconmobile.taxifood.db.utilits.FruitDatabaseHelper
 import uz.falconmobile.taxifood.model.food_change
 import uz.falconmobile.taxifood.model.food_model
+import uz.falconmobile.taxifood.model.order_food_model
 
 class OpenCategoryActivity : AppCompatActivity() {
 
@@ -27,7 +29,7 @@ class OpenCategoryActivity : AppCompatActivity() {
     private lateinit var adapter: FoodAdapter
     lateinit var list: ArrayList<food_model2>
     lateinit var db: FirebaseFirestore
-    lateinit var dbHelper2: FoodItemDatabaseHelper
+    lateinit var dbHelper: FruitDatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +38,7 @@ class OpenCategoryActivity : AppCompatActivity() {
 
         setContentView(binding.root)
         db = FirebaseFirestore.getInstance()
-        dbHelper2 = FoodItemDatabaseHelper(this)
+        dbHelper = FruitDatabaseHelper(this)
 
         val data = intent.getSerializableExtra("change") as food_change
 
@@ -109,32 +111,42 @@ class OpenCategoryActivity : AppCompatActivity() {
 
 
         adapter =
-            FoodAdapter(id, this, list, object : FoodAdapter.ItemSetOnClickListener {
-                override fun onClick(data: food_model2) {
-                    if (dbHelper2.addFoodItem(
-                            food_model(
-                                data.name,
-                                data.description,
-                                data.banner,
-                                data.price,
-                                data.rate,
-                                data.rate_count,
-                                data.veg
-                            )
-                        ) != -1L
-                    ) {
+            FoodAdapter(id, this, list,
+                object : FoodAdapter.ItemSetOnClickListener {
+                    override fun onClick(data: food_model2) {
 
-                        Toast.makeText(
-                            this@OpenCategoryActivity, "Successfully added", Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this@OpenCategoryActivity, "Failed to add item", Toast.LENGTH_SHORT
-                        ).show()
+
+                        if (dbHelper.addFruitItem(
+                                order_food_model(
+                                    name = "${data.name}",
+                                    price = data.price,
+                                    count = 1,
+                                    imageUrl = data.banner,
+                                    restouran = data.restouran
+                                )
+                            ) != -1L
+                        ) {
+
+
+                        }
+
                     }
+                }, object : FoodAdapter.ItemSetOnClickListener2 {
+                    override fun onClick(count: Int, data: food_model2) {
+                        if (dbHelper.updateFruitItem(
+                                order_food_model(
+                                    name = "${data.name}",
+                                    price = data.price,
+                                    count = count,
+                                    imageUrl = data.banner,
+                                    restouran = data.restouran
+                                )
+                            ) != -1
+                        ) {
 
 
-                }
+                        }
+                    }
             })
 
         binding.rvFood.adapter = adapter

@@ -16,8 +16,8 @@ import uz.falconmobile.taxifood.databinding.FragmentFavoriteFoodBinding
 import uz.falconmobile.taxifood.db.models.FavoriteFoods
 import uz.falconmobile.taxifood.db.utilits.AppDao
 import uz.falconmobile.taxifood.db.utilits.AppDatabase
-import uz.falconmobile.taxifood.db.utilits.FoodItemDatabaseHelper
-import uz.falconmobile.taxifood.model.food_model
+import uz.falconmobile.taxifood.db.utilits.FruitDatabaseHelper
+import uz.falconmobile.taxifood.model.order_food_model
 
 
 class FavoriteFoodFragment : Fragment() {
@@ -26,7 +26,7 @@ class FavoriteFoodFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: WIshlistAdapter
     private var foodList: MutableList<FavoriteFoods> = mutableListOf()
-    lateinit var dbHelper: FoodItemDatabaseHelper
+    lateinit var dbHelper: FruitDatabaseHelper
 
     private lateinit var database2: AppDatabase
 
@@ -45,7 +45,7 @@ class FavoriteFoodFragment : Fragment() {
 
         val root: View = _binding!!.root
         // Inflate the layout for this fragment
-        dbHelper = FoodItemDatabaseHelper(requireActivity())
+        dbHelper = FruitDatabaseHelper(requireActivity())
 
 
         database2 = AppDatabase.getDatabase(requireActivity())
@@ -72,33 +72,40 @@ class FavoriteFoodFragment : Fragment() {
                 override fun onClick(data: FavoriteFoods) {
                     // Handle click events
 
-                    if (dbHelper.addFoodItem(
-                            food_model(
+                    if (dbHelper.addFruitItem(
+                            order_food_model(
                                 name = data.foodName,
-                                description = data.description,
-                                banner = data.image,
+                                count = 1,
+                                imageUrl = data.image,
                                 price = data.price,
-                                rate_count = data.star_count.toInt(),
-                                rate = data.star,
-                                veg = data.isVeg
-                            )
+                                restouran = data.restouran,
+
+                                )
                         ) != -1L
                     ) {
 
 
-                        Toast.makeText(
-                            requireActivity(),
-                            "Successfully added",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            requireActivity(),
-                            "Failed to add item",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
 
+                }
+            }, object : WIshlistAdapter.ItemSetOnClickListener2 {
+                override fun onClick(data: FavoriteFoods, count: Int) {
+
+
+                    if (dbHelper.updateFruitItem(
+                            order_food_model(
+                                name = data.foodName,
+                                count = count,
+                                imageUrl = data.image,
+                                price = data.price,
+                                restouran = data.restouran,
+
+                                )
+                        ) != -1
+                    ) {
+
+
+                    }
                 }
             })
 
